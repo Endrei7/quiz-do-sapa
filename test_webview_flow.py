@@ -77,12 +77,21 @@ def main():
         results["questions"] = q_checks
         time.sleep(1.4)
         results["podium"] = win.evaluate_js("""
-            (() => ({
-              active: document.getElementById('screen-podium').classList.contains('active'),
-              cols: document.querySelectorAll('.podium-col.revealed').length,
-              headline: document.getElementById('podium-headline').textContent,
-              overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
-            }))()
+            (() => {
+              const topRect = document.querySelector('.top-bar').getBoundingClientRect();
+              const stageRect = document.querySelector('.podium-stage').getBoundingClientRect();
+              const fourthRect = document.getElementById('fourth-place-pill').getBoundingClientRect();
+              const soundRect = document.getElementById('btn-sound').getBoundingClientRect();
+              return {
+                active: document.getElementById('screen-podium').classList.contains('active'),
+                cols: document.querySelectorAll('.podium-col.revealed').length,
+                headline: document.getElementById('podium-headline').textContent,
+                topBarH: Math.round(topRect.height),
+                soundBtnH: Math.round(soundRect.height),
+                stageToFourthGap: Math.round(fourthRect.top - stageRect.bottom),
+                overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
+              };
+            })()
         """)
         win.destroy()
 
@@ -99,6 +108,10 @@ def main():
     assert all(q["fbVisible"] for q in results["questions"])
     assert results["questions"][2]["isAngry"] is True
     assert results["podium"]["active"] and results["podium"]["cols"] == 3
+    assert results["podium"]["topBarH"] <= 72
+    assert results["podium"]["soundBtnH"] <= 46
+    assert results["podium"]["stageToFourthGap"] >= 0
+    assert results["podium"]["overflowY"] is False
     print("ALL PYWEBVIEW TESTS PASSED!")
 
 

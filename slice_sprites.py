@@ -1,4 +1,4 @@
-"""Fatia spritesheet.jpeg (grade 3x2), remove textos e deixa fundo branco transparente."""
+"""Fatia spritesheet.jpeg (grade 3x2), remove textos e deixa apenas o fundo externo transparente."""
 
 from collections import deque
 import os
@@ -9,7 +9,6 @@ SRC_SHEET = os.path.join(BASE_DIR, "spritesheet.jpeg")
 OUT_DIR = os.path.join(BASE_DIR, "web", "assets", "sprites")
 
 GRID_SPECS = [
-    # (nome, col, row)
     ("idle", 0, 0),
     ("victory", 1, 0),
     ("thinking", 2, 0),
@@ -24,17 +23,10 @@ def is_near_white(r: int, g: int, b: int) -> bool:
 
 
 def extract_frog_from_cell(cell: Image.Image) -> Image.Image:
-    """Mantem apenas o maior componente nao-branco (o sapo, ignorando rotulos de texto) e torna o fundo transparente."""
-    # Reduz 2x durante a segmentacao para rapidez mantendo nitidez total no recorte final
+    """Isola apenas o sapo (removendo textos), preenchendo buracos internos (olhos/garrafa) antes da mascara."""
     w, h = cell.size
     rgb = cell.convert("RGB")
-    px = rgb.load()
 
-    # 1. Mascara de pixels nao-brancos (desenho + letras)
-    fg = [[not is_near_white(*px[x, y]) for x in range(w)] for y in range(h)]
-
-    # 2. Encontra componentes conectados na mascara dilatada (para juntar pequenas falhas, mas manter texto separado)
-    # Usamos passo em grade ou BFS direto na imagem reduzida (680x1024 -> ~0.7M px, super rapido em Pillow se usarmos miniatura para achar bbox)
     small_w, small_h = w // 2, h // 2
     small = rgb.resize((small_w, small_h), Image.Resampling.BILINEAR)
     spx = small.load()
@@ -71,27 +63,58 @@ def extract_frog_from_cell(cell: Image.Image) -> Image.Image:
                 best_bbox = (minx, miny, maxx + 1, maxy + 1)
                 best_mask = pts
 
-    # Mapeia bounding box do sapo de volta para resolucao original com margem
+    # Constroi mascara solida do sapo e PREENCHE buracos internos (olhos brancos, garrafa)
+    frog_mask = Image.new("L", (small_w, small_h), 0)
+    fpx = frog_mask.load()
+    if best_mask:
+        for px_x, px_y in best_mask:
+            fpx[px_x, px_y] = 255
+    frog_mask = frog_mask.filter(ImageFilter.MaxFilter(5))
+    fpx = frog_mask.load()
+
+    # Flood-fill do lado externo na mascara dilatada; tudo que nao for alcancado pelo exterior pertence ao sapo (incluindo olhos!)
+    ext = [[False] * small_w for _ in range(small_h)]
+    eq = deque()
+    for x in range(small_w):
+        if fpx[x, 0] == 0:
+            ext[0][x] = True
+            eq.append((x, 0))
+        if fpx[x, small_h - 1] == 0:
+            ext[small_h - 1][x] = True
+            eq.append((x, small_h - 1))
+    for y in range(small_h):
+        if fpx[0, y] == 0:
+            ext[y][0] = True
+            eq.append((0, y))
+        if fpx[small_w - 1, y] == 0:
+            ext[y][small_w - 1] = True
+            eq.append((small_w - 1, y))
+
+    while eq:
+        cx, cy = eq.popleft()
+        for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+            if 0 <= nx < small_w and 0 <= ny < small_h and not ext[ny][nx] and fpx[nx, ny] == 0:
+                ext[ny][nx] = True
+                eq.append((nx, ny))
+
+    for y in range(small_h):
+        for x in range(small_w):
+            fpx[x, y] = 0 if ext[y][x] else 255
+
+    frog_mask_full = frog_mask.resize((w, h), Image.Resampling.NEAREST)
+    mpx = frog_mask_full.load()
+
     pad = 8
     x0 = max(0, best_bbox[0] * 2 - pad)
     y0 = max(0, best_bbox[1] * 2 - pad)
     x1 = min(w, best_bbox[2] * 2 + pad)
     y1 = min(h, best_bbox[3] * 2 + pad)
 
-    # Limpa eventuais restos de letras que invadam a bounding box usando a mascara do maior componente
-    frog_region_mask = Image.new("L", (small_w, small_h), 0)
-    fpx = frog_region_mask.load()
-    if best_mask:
-        for px_x, px_y in best_mask:
-            fpx[px_x, px_y] = 255
-    frog_region_mask = frog_region_mask.filter(ImageFilter.MaxFilter(5)).resize((w, h), Image.Resampling.NEAREST)
-    mpx = frog_region_mask.load()
-
     cropped = rgb.crop((x0, y0, x1, y1)).convert("RGBA")
     cw, ch = cropped.size
     cpx = cropped.load()
 
-    # Zera qualquer pixel fora da mascara do sapo que seja parte de texto
+    # Remove apenas pixels fora da silhueta solida do sapo (textos externos)
     for cy in range(ch):
         oy = y0 + cy
         for cx in range(cw):
@@ -99,7 +122,7 @@ def extract_frog_from_cell(cell: Image.Image) -> Image.Image:
             if mpx[ox, oy] == 0:
                 cpx[cx, cy] = (255, 255, 255, 0)
 
-    # Flood-fill a partir das bordas do recorte por pixels quase-brancos para preservar o branco DENTRO dos olhos e da garrafa!
+    # Flood-fill a partir das bordas por branco externo para manter olhos e garrafa 100% opacos
     bg_vis = [[False] * cw for _ in range(ch)]
     q = deque()
     for x in range(cw):
@@ -121,7 +144,6 @@ def extract_frog_from_cell(cell: Image.Image) -> Image.Image:
             q.append((cx, cy + 1))
             q.append((cx, cy - 1))
 
-    # Aplica transparencia com suavizacao suave na borda externa
     for cy in range(ch):
         for cx in range(cw):
             if bg_vis[cy][cx]:
@@ -143,7 +165,6 @@ def extract_frog_from_cell(cell: Image.Image) -> Image.Image:
     if final_bbox:
         cropped = cropped.crop(final_bbox)
 
-    # Redimensiona para altura padrao nitida (~520px max) para carregamento instantaneo em Base64
     cropped.thumbnail((520, 520), Image.Resampling.LANCZOS)
     return cropped
 

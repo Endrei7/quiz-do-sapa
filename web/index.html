@@ -112,7 +112,7 @@
     inset: 0;
     width: 100%;
     height: 100%;
-    z-index: 40;
+    z-index: 5;
     pointer-events: none;
   }
 
@@ -155,21 +155,27 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
+    flex-shrink: 1;
   }
 
   .brand-logo {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
     border: 3px solid var(--navy-border);
     object-fit: cover;
+    flex-shrink: 0;
   }
 
   .brand-tag {
     color: var(--navy-border);
     font-weight: 900;
-    font-size: clamp(13px, 1.3vw, 17px);
+    font-size: clamp(13px, 1.25vw, 16px);
     letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .q-num-badge {
@@ -177,9 +183,10 @@
     color: var(--ink);
     border: 3px solid var(--ink);
     border-radius: 999px;
-    padding: 4px 16px;
+    padding: 4px 14px;
     font-weight: 900;
-    font-size: 17px;
+    font-size: 16px;
+    white-space: nowrap;
     box-shadow: 0 3px 0 var(--ink);
   }
 
@@ -187,16 +194,18 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
   }
 
   .score-pill {
     border-radius: 999px;
-    padding: 5px 12px;
+    padding: 4px 11px;
     color: #ffffff;
     font-weight: 900;
-    font-size: 13px;
-    border: 3px solid var(--ink);
+    font-size: 12.5px;
+    white-space: nowrap;
+    border: 2.5px solid var(--ink);
     box-shadow: 0 3px 0 rgba(30, 41, 59, 0.85);
   }
 
@@ -204,16 +213,19 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   /* Botões infantis 3D arredondados */
   .kid-btn {
     border: 3px solid var(--ink);
     border-radius: 999px;
-    padding: 7px 16px;
+    padding: 7px 15px;
     font-family: inherit;
     font-weight: 900;
-    font-size: 14px;
+    font-size: 13.5px;
+    white-space: nowrap;
     cursor: pointer;
     color: var(--ink);
     background: linear-gradient(180deg, #ffffff 0%, #e0f2fe 100%);
@@ -940,22 +952,24 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 10px;
+    gap: 8px;
+    padding: 2px 10px 4px;
   }
 
   .podium-header {
     text-align: center;
+    flex-shrink: 0;
   }
 
   .podium-title {
-    font-size: clamp(30px, 3.6vw, 48px);
+    font-size: clamp(28px, 3.4vw, 46px);
   }
 
   .podium-sub {
     margin: 4px 0 0;
     color: #ffffff;
     font-weight: 900;
-    font-size: clamp(14px, 1.4vw, 19px);
+    font-size: clamp(14px, 1.35vw, 18px);
     text-shadow: 0 2px 6px rgba(3, 58, 94, 0.65);
   }
 
@@ -963,14 +977,15 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    gap: 24px;
+    gap: 28px;
     width: 100%;
     flex: 1;
     min-height: 0;
+    padding-bottom: 4px;
   }
 
   .podium-mascot {
-    height: clamp(140px, 24vh, 225px);
+    height: clamp(120px, 21vh, 195px);
     display: flex;
     align-items: flex-end;
   }
@@ -980,8 +995,7 @@
     align-items: flex-end;
     justify-content: center;
     gap: 16px;
-    height: 100%;
-    max-height: 350px;
+    height: auto;
   }
 
   .podium-col {
@@ -989,8 +1003,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    width: clamp(155px, 16vw, 220px);
-    height: 100%;
+    width: clamp(150px, 15.5vw, 215px);
   }
 
   .podium-team-name {
@@ -1042,6 +1055,15 @@
   .podium-bar.silver { background: linear-gradient(180deg, #f8fafc 0%, #94a3b8 100%); }
   .podium-bar.bronze { background: linear-gradient(180deg, #fed7aa 0%, #ea580c 100%); }
 
+  .podium-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
   .fourth-place-pill {
     background: #ffffff;
     color: var(--ink);
@@ -1049,14 +1071,13 @@
     border-radius: 999px;
     padding: 6px 20px;
     font-weight: 900;
-    font-size: 15px;
+    font-size: 14.5px;
     box-shadow: 0 4px 0 var(--ink);
   }
 
   .podium-actions {
     display: flex;
     gap: 14px;
-    padding-top: 4px;
   }
 </style>
 </head>
@@ -1318,9 +1339,11 @@
             <div class="podium-mascot">
               <img id="podium-mascot-left" class="mascot-img anim-victory" alt="Mascote comemorando">
             </div>
-            <svg class="lily-pad-svg" style="max-width:185px;" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
+            <div class="frog-shadow"></div>
+            <svg class="lily-pad-svg" style="max-width:195px; margin-top:-18px;" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
               <ellipse cx="130" cy="36" rx="120" ry="24" fill="#16a34a" stroke="#14532d" stroke-width="4"/>
               <ellipse cx="130" cy="31" rx="105" ry="18" fill="#4ade80"/>
+              <polygon points="130,31 154,18 130,33 106,18" fill="#0284c7"/>
             </svg>
           </div>
 
@@ -1330,22 +1353,26 @@
             <div class="podium-mascot">
               <img id="podium-mascot-right" class="mascot-img anim-hop" alt="Mascote acenando">
             </div>
-            <svg class="lily-pad-svg" style="max-width:185px;" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
+            <div class="frog-shadow"></div>
+            <svg class="lily-pad-svg" style="max-width:195px; margin-top:-18px;" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
               <ellipse cx="130" cy="36" rx="120" ry="24" fill="#16a34a" stroke="#14532d" stroke-width="4"/>
               <ellipse cx="130" cy="31" rx="105" ry="18" fill="#4ade80"/>
+              <polygon points="130,31 154,18 130,33 106,18" fill="#0284c7"/>
             </svg>
           </div>
         </div>
 
-        <div class="fourth-place-pill" id="fourth-place-pill" style="display:none;"></div>
+        <div class="podium-footer">
+          <div class="fourth-place-pill" id="fourth-place-pill" style="display:none;"></div>
 
-        <div class="podium-actions">
-          <button class="kid-btn mint" id="btn-play-again" type="button" style="font-size:18px; padding:11px 26px;">
-            🔄 Jogar Novamente
-          </button>
-          <button class="kid-btn" id="btn-exit" type="button" style="font-size:16px; padding:11px 22px;">
-            Sair
-          </button>
+          <div class="podium-actions">
+            <button class="kid-btn mint" id="btn-play-again" type="button" style="font-size:18px; padding:11px 26px;">
+              🔄 Jogar Novamente
+            </button>
+            <button class="kid-btn" id="btn-exit" type="button" style="font-size:16px; padding:11px 22px;">
+              Sair
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -1857,11 +1884,11 @@
     SoundFX.fanfare();
     qCounterBadge.style.display = "none";
     topBrandText.style.display = "inline";
-    refreshHudScores();
+    hudScores.innerHTML = "";
 
     setMascot(podiumMascotLeft, "victory", "anim-victory");
     setMascot(podiumMascotRight, "waving", "anim-hop");
-    spawnCelebration(88, true);
+    spawnCelebration(72, true);
 
     const ranked = [...state.teams].sort((a, b) => b.score - a.score);
     const hasTie = ranked.length > 1 && ranked[0].score === ranked[1].score;
@@ -1870,9 +1897,9 @@
       : `PARABÉNS, ${ranked[0].name.toUpperCase()}!`;
 
     const slots = [];
-    if (ranked[1]) slots.push({ rank: 2, team: ranked[1], h: 185, cls: "silver", medal: "🥈 2º LUGAR", delay: 650 });
-    slots.push({ rank: 1, team: ranked[0], h: 250, cls: "gold", medal: "🥇 1º LUGAR", delay: 1200 });
-    if (ranked[2]) slots.push({ rank: 3, team: ranked[2], h: 130, cls: "bronze", medal: "🥉 3º LUGAR", delay: 180 });
+    if (ranked[1]) slots.push({ rank: 2, team: ranked[1], h: 145, cls: "silver", medal: "🥈 2º LUGAR", delay: 650 });
+    slots.push({ rank: 1, team: ranked[0], h: 195, cls: "gold", medal: "🥇 1º LUGAR", delay: 1200 });
+    if (ranked[2]) slots.push({ rank: 3, team: ranked[2], h: 100, cls: "bronze", medal: "🥉 3º LUGAR", delay: 180 });
 
     podiumColumns.innerHTML = "";
     slots.forEach((slot) => {
