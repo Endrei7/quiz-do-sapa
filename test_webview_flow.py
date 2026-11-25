@@ -45,6 +45,8 @@ def main():
                   noTimer: document.getElementById('timer-panel') === null,
                   hasActionBar: document.getElementById('action-panel') !== null,
                   bossVisible: document.getElementById('boss-hp-panel').classList.contains('visible'),
+                  bossSpotDisplay: getComputedStyle(document.getElementById('boss-spot')).display,
+                  brokenVisibleImgs: Array.from(document.querySelectorAll('#screen-quiz img')).filter(im => im.offsetParent !== null && im.naturalWidth === 0).length,
                   overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
                 }))()
             """)
@@ -105,6 +107,9 @@ def main():
 
     q0 = results["questions"][0]
     assert q0["noTimer"] and q0["hasActionBar"]
+    assert q0["bossSpotDisplay"] == "none"
+    assert all(q["brokenVisibleImgs"] == 0 for q in results["questions"])
+    assert results["questions"][9]["bossSpotDisplay"] == "flex"
     assert "+200" in q0["btnTexts"][0]
     assert "+150" in q0["btnTexts"][1]
     assert "+100" in q0["btnTexts"][2]

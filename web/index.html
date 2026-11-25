@@ -403,14 +403,14 @@
     gap: 20px;
   }
 
-  .boss-river-spot {
+  #boss-spot {
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
     padding-top: 2px;
   }
-  .question-stage.boss-layout .boss-river-spot {
+  .question-stage.boss-layout #boss-spot {
     display: flex;
   }
 
@@ -1451,7 +1451,7 @@
         </div>
 
         <!-- CAPITÃO GARRAFÃO À DIREITA (apenas na Fase Boss) -->
-        <div class="lily-spot boss-river-spot pop-in" id="boss-spot">
+        <div class="lily-spot pop-in" id="boss-spot" hidden>
           <div class="mascot-box">
             <img id="boss-img" class="mascot-img boss-float" alt="Capitão Garrafão">
           </div>
@@ -1786,6 +1786,7 @@
   const bossHpFill = document.getElementById("boss-hp-fill");
   const bossHpText = document.getElementById("boss-hp-text");
   const bossImg = document.getElementById("boss-img");
+  const bossSpot = document.getElementById("boss-spot");
   const bossTag = document.getElementById("boss-tag");
 
   const feedbackPanel = document.getElementById("feedback-panel");
@@ -1833,6 +1834,8 @@
     questionStage.classList.remove("boss-layout");
     questionBubble.classList.remove("tail-right", "boss-bubble");
     questionBubble.classList.add("tail-left");
+    bossSpot.hidden = true;
+    bossImg.removeAttribute("src");
   }
 
   /* ================== TELA INICIAL ================== */
@@ -1944,6 +1947,7 @@
 
     if (isBoss) {
       document.body.classList.add("boss-mode");
+      bossSpot.hidden = false;
       bossHpPanel.classList.add("visible");
       bossHpFill.style.width = "100%";
       bossHpText.textContent = "200 / 200 HP";
