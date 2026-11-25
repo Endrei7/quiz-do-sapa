@@ -1,0 +1,1973 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz do S.A.P.A. — Guardiões dos Rios</title>
+<style>
+  :root {
+    --sky-top: #38bdf8;
+    --sky-mid: #0ea5e9;
+    --water-bot: #0284c7;
+    --ink: #1e293b;
+    --navy-border: #0369a1;
+    --card-bg: #f8fdff;
+    --cream: #ffffff;
+    --lime: #4ade80;
+    --lime-dark: #16a34a;
+    --gold: #fde047;
+    --silver: #e2e8f0;
+    --bronze: #fdba74;
+
+    /* 4 Alternativas Kahoot Fofas 3D */
+    --red: #ef233c;
+    --red-top: #ff4d63;
+    --red-edge: #9b0f22;
+
+    --blue: #2563eb;
+    --blue-top: #4b86ff;
+    --blue-edge: #153e9e;
+
+    --yellow: #eab308;
+    --yellow-top: #ffd22e;
+    --yellow-edge: #a16207;
+
+    --green: #22c55e;
+    --green-top: #4ade80;
+    --green-edge: #15803d;
+  }
+
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 52%, var(--water-bot) 100%);
+  }
+
+  /* ================== CENÁRIO VETORIAL: CÉU AZUL, NUVENS, RIO E VITÓRIAS-RÉGIAS ================== */
+  #bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  #bg-layer svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .cloud-slow {
+    animation: cloudDrift 28s ease-in-out infinite;
+  }
+  .cloud-fast {
+    animation: cloudDriftReverse 22s ease-in-out infinite;
+  }
+  .wave-back {
+    animation: waveSlide 7s ease-in-out infinite;
+  }
+  .wave-front {
+    animation: waveSlideReverse 5.5s ease-in-out infinite;
+  }
+  .drop-float {
+    animation: dropBob 3.8s ease-in-out infinite;
+  }
+
+  @keyframes cloudDrift {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(36px); }
+  }
+  @keyframes cloudDriftReverse {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(-34px); }
+  }
+  @keyframes waveSlide {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(-28px); }
+  }
+  @keyframes waveSlideReverse {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(26px); }
+  }
+  @keyframes dropBob {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-9px); }
+  }
+
+  /* ================== CANVAS DE CONFETES & GOTINHAS ================== */
+  #fx-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 40;
+    pointer-events: none;
+  }
+
+  /* ================== LAYOUT PRINCIPAL ================== */
+  #app {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 24px 14px;
+    gap: 10px;
+  }
+
+  /* ================== CARTÕES ESTILO BRINQUEDO / HQ ================== */
+  .toy-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+    border: 4px solid var(--navy-border);
+    border-radius: 28px;
+    box-shadow:
+      0 8px 0 var(--navy-border),
+      0 14px 26px rgba(3, 58, 94, 0.22),
+      inset 0 3px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  /* ================== BARRA SUPERIOR ================== */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 18px;
+    border-radius: 24px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 0 var(--navy-border), 0 10px 18px rgba(3, 58, 94, 0.18);
+  }
+
+  .brand-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 3px solid var(--navy-border);
+    object-fit: cover;
+  }
+
+  .brand-tag {
+    color: var(--navy-border);
+    font-weight: 900;
+    font-size: clamp(13px, 1.3vw, 17px);
+    letter-spacing: 0.2px;
+  }
+
+  .q-num-badge {
+    background: linear-gradient(180deg, #fde047 0%, #facc15 100%);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 4px 16px;
+    font-weight: 900;
+    font-size: 17px;
+    box-shadow: 0 3px 0 var(--ink);
+  }
+
+  .hud-score-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .score-pill {
+    border-radius: 999px;
+    padding: 5px 12px;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 13px;
+    border: 3px solid var(--ink);
+    box-shadow: 0 3px 0 rgba(30, 41, 59, 0.85);
+  }
+
+  .top-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Botões infantis 3D arredondados */
+  .kid-btn {
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--ink);
+    background: linear-gradient(180deg, #ffffff 0%, #e0f2fe 100%);
+    box-shadow: 0 4px 0 var(--ink);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  }
+
+  .kid-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    filter: brightness(1.04);
+  }
+
+  .kid-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--ink);
+  }
+
+  .kid-btn.sky {
+    background: linear-gradient(180deg, #7dd3fc 0%, #0ea5e9 100%);
+    color: #ffffff;
+    text-shadow: 0 1.5px 0 rgba(12, 74, 110, 0.7);
+  }
+
+  .kid-btn.sunny {
+    background: linear-gradient(180deg, #fef08a 0%, #f59e0b 100%);
+    color: var(--ink);
+  }
+
+  .kid-btn.mint {
+    background: linear-gradient(180deg, #6ee7b7 0%, #10b981 100%);
+    color: #052e16;
+  }
+
+  /* ================== TÍTULO CARTOON ================== */
+  .cartoon-title {
+    margin: 0;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    line-height: 1.04;
+    color: #fef08a;
+    -webkit-text-stroke: 3.5px #0f172a;
+    paint-order: stroke fill;
+    text-shadow:
+      0 6px 0 #0f172a,
+      0 10px 20px rgba(3, 58, 94, 0.45);
+  }
+
+  /* ================== TELAS ================== */
+  .screen {
+    display: none;
+    flex: 1;
+    min-height: 0;
+  }
+  .screen.active {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ================== BALÃO DE QUADRINHOS (HQ) ================== */
+  .comic-bubble {
+    position: relative;
+    background: #ffffff;
+    border: 4px solid var(--ink);
+    border-radius: 28px;
+    box-shadow: 0 7px 0 var(--ink), 0 12px 24px rgba(15, 23, 42, 0.18);
+    padding: 14px 22px;
+    color: var(--ink);
+  }
+
+  /* Cauda apontando para baixo (usada na Tela Inicial acima do sapinho) */
+  .comic-bubble.tail-bottom::before,
+  .comic-bubble.tail-bottom::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+  .comic-bubble.tail-bottom::before {
+    bottom: -24px;
+    border-width: 24px 16px 0 16px;
+    border-color: var(--ink) transparent transparent transparent;
+  }
+  .comic-bubble.tail-bottom::after {
+    bottom: -16px;
+    border-width: 18px 12px 0 12px;
+    border-color: #ffffff transparent transparent transparent;
+  }
+
+  /* Cauda apontando para a esquerda (usada na Tela da Pergunta saindo da boca do sapinho) */
+  .comic-bubble.tail-left::before,
+  .comic-bubble.tail-left::after {
+    content: "";
+    position: absolute;
+    top: 52%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+  .comic-bubble.tail-left::before {
+    left: -26px;
+    border-width: 15px 26px 15px 0;
+    border-color: transparent var(--ink) transparent transparent;
+  }
+  .comic-bubble.tail-left::after {
+    left: -18px;
+    border-width: 11px 20px 11px 0;
+    border-color: transparent #ffffff transparent transparent;
+  }
+
+  /* ================== MASCOTE SOLTO NA VITÓRIA-RÉGIA ================== */
+  .lily-spot {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .lily-pad-svg {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    margin-top: -28px;
+    z-index: 1;
+    filter: drop-shadow(0 6px 10px rgba(2, 62, 102, 0.35));
+  }
+
+  .frog-shadow {
+    width: 58%;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(15, 62, 28, 0.34);
+    margin-top: -12px;
+    margin-bottom: -16px;
+    z-index: 2;
+  }
+
+  .mascot-img {
+    position: relative;
+    z-index: 3;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transform-origin: bottom center;
+    filter: drop-shadow(0 8px 10px rgba(2, 48, 71, 0.28));
+  }
+
+  .anim-breathe { animation: frogBreathe 2.8s ease-in-out infinite; }
+  .anim-hop { animation: frogHop 1.65s ease-in-out infinite; }
+  .anim-victory { animation: frogVictoryJump 0.85s ease-in-out infinite; }
+  .anim-sad { animation: frogSadShake 0.55s ease-in-out 2; }
+  .anim-angry { animation: frogAngryBob 1.3s ease-in-out infinite; }
+
+  @keyframes frogBreathe {
+    0%, 100% { transform: scaleY(1) scaleX(1) rotate(0deg); }
+    50% { transform: scaleY(1.04) scaleX(0.98) rotate(1deg); }
+  }
+  @keyframes frogHop {
+    0%, 100% { transform: translateY(0px) scaleY(1); }
+    20% { transform: translateY(4px) scaleY(0.94) scaleX(1.04); }
+    50% { transform: translateY(-16px) scaleY(1.05) rotate(-2deg); }
+    80% { transform: translateY(2px) scaleY(0.96); }
+  }
+  @keyframes frogVictoryJump {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    25% { transform: translateY(5px) scaleY(0.92) scaleX(1.06); }
+    55% { transform: translateY(-26px) scale(1.07) rotate(-3deg); }
+    80% { transform: translateY(-4px) rotate(2deg); }
+  }
+  @keyframes frogSadShake {
+    0%, 100% { transform: translateX(0px) rotate(0deg); }
+    20% { transform: translateX(-11px) rotate(-4deg); }
+    40% { transform: translateX(11px) rotate(4deg); }
+    60% { transform: translateX(-8px) rotate(-2deg); }
+    80% { transform: translateX(8px) rotate(2deg); }
+  }
+  @keyframes frogAngryBob {
+    0%, 100% { transform: scale(1) rotate(-1deg); }
+    50% { transform: scale(1.04) rotate(1.5deg); }
+  }
+  @keyframes popInElastic {
+    0% { opacity: 0; transform: scale(0.76) translateY(20px); }
+    68% { opacity: 1; transform: scale(1.04) translateY(-4px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .pop-in {
+    animation: popInElastic 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ================== 1. TELA INICIAL ================== */
+  .start-grid {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1.05fr 1.15fr;
+    gap: 24px;
+    align-items: center;
+    padding: 0 8px;
+  }
+
+  .start-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .badge-5ano {
+    display: inline-block;
+    background: linear-gradient(180deg, #86efac 0%, #22c55e 100%);
+    color: #052e16;
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 5px 18px;
+    font-weight: 900;
+    font-size: 14px;
+    box-shadow: 0 4px 0 var(--ink);
+  }
+
+  .start-title {
+    font-size: clamp(38px, 4.5vw, 62px);
+  }
+
+  .start-bubble {
+    font-weight: 800;
+    font-size: clamp(14px, 1.35vw, 18px);
+    max-width: 440px;
+    margin-bottom: 10px;
+  }
+
+  .start-mascot-wrap {
+    height: clamp(180px, 28vh, 255px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .setup-card {
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .setup-card h2 {
+    margin: 0;
+    font-size: clamp(22px, 2.2vw, 30px);
+    color: var(--navy-border);
+  }
+
+  .count-pills {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .count-pill {
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 15px;
+    cursor: pointer;
+    background: #e0f2fe;
+    color: var(--ink);
+    box-shadow: 0 4px 0 var(--ink);
+    transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .count-pill:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--ink);
+  }
+
+  .count-pill.selected {
+    background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+    color: #ffffff;
+  }
+
+  .team-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .team-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f0f9ff;
+    border: 3px solid #7dd3fc;
+    border-radius: 20px;
+    padding: 6px 12px;
+  }
+
+  .team-emblem {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 15px;
+    flex-shrink: 0;
+    border: 3px solid var(--ink);
+    box-shadow: 0 3px 0 var(--ink);
+  }
+
+  .team-icon-svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .team-input-row input {
+    flex: 1;
+    border: 2px solid #bae6fd;
+    border-radius: 14px;
+    padding: 7px 12px;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--ink);
+    background: #ffffff;
+    outline: none;
+  }
+
+  .team-input-row input:focus {
+    border-color: var(--navy-border);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+  }
+
+  .start-cta {
+    margin-top: 4px;
+    border: 4px solid var(--ink);
+    border-radius: 22px;
+    padding: 14px 20px;
+    font-family: inherit;
+    font-weight: 900;
+    font-size: clamp(20px, 2vw, 26px);
+    color: #ffffff;
+    text-shadow: 0 2px 0 #14532d;
+    background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+    box-shadow: 0 7px 0 #14532d, 0 12px 20px rgba(20, 83, 45, 0.28);
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  }
+
+  .start-cta:hover {
+    transform: translateY(-2px) scale(1.02);
+    filter: brightness(1.05);
+  }
+
+  .start-cta:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #14532d;
+  }
+
+  /* ================== 2. TELA DA PERGUNTA & RESPOSTA ================== */
+  .timer-strip {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 7px 16px;
+    border-radius: 24px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 0 var(--navy-border);
+  }
+
+  /* Gotinha d'água circular animada do temporizador */
+  .droplet-timer {
+    position: relative;
+    width: 62px;
+    height: 66px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .droplet-timer.urgent {
+    animation: dropPulse 0.55s ease-in-out infinite;
+  }
+
+  @keyframes dropPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.13); }
+  }
+
+  .droplet-timer svg {
+    width: 60px;
+    height: 64px;
+    filter: drop-shadow(0 3px 0 rgba(30, 41, 59, 0.4));
+  }
+
+  .droplet-num {
+    position: absolute;
+    top: 56%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 900;
+    font-size: 16px;
+    color: var(--ink);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+
+  .timer-track {
+    flex: 1;
+    height: 22px;
+    background: #e0f2fe;
+    border-radius: 999px;
+    padding: 3px;
+    border: 3px solid var(--navy-border);
+    overflow: hidden;
+  }
+
+  .timer-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, #22c55e);
+    transition: width 0.1s linear, background 0.45s ease;
+  }
+
+  /* Palco Pergunta: Sapinho na Vitória-Régia à esquerda + Grande Balão HQ à direita */
+  .question-stage {
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    gap: 24px;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 6px;
+  }
+
+  .mascot-river-spot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-top: 2px;
+  }
+
+  .mascot-box {
+    height: clamp(120px, 18vh, 172px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .question-bubble {
+    padding: 16px 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-height: clamp(125px, 18vh, 175px);
+  }
+
+  .topic-chip {
+    display: inline-block;
+    align-self: flex-start;
+    background: #e0f2fe;
+    color: var(--navy-border);
+    border: 2.5px solid #38bdf8;
+    border-radius: 999px;
+    padding: 2px 14px;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .question-text {
+    margin: 0;
+    font-weight: 900;
+    font-size: clamp(21px, 2.35vw, 31px);
+    line-height: 1.22;
+    color: var(--ink);
+  }
+
+  .mascot-mini-tag {
+    margin-top: -8px;
+    z-index: 4;
+    background: #ffffff;
+    border: 2.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-weight: 900;
+    font-size: 12px;
+    color: var(--ink);
+    box-shadow: 0 3px 0 var(--ink);
+    text-align: center;
+  }
+
+  /* Painel de Feedback Educativo + Pontuação */
+  .feedback-card {
+    display: none;
+    padding: 10px 18px;
+    border-radius: 24px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 0 var(--navy-border);
+  }
+
+  .feedback-card.visible {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: popInElastic 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .explanation-box {
+    background: #dcfce7;
+    border: 3px solid #16a34a;
+    border-radius: 16px;
+    padding: 8px 14px;
+    font-weight: 800;
+    font-size: clamp(14px, 1.35vw, 18px);
+    color: #052e16;
+  }
+
+  .award-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .award-teams {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .award-label {
+    color: var(--navy-border);
+    font-weight: 900;
+    font-size: 15px;
+  }
+
+  .team-award-btn {
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 7px 15px;
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 14px;
+    cursor: pointer;
+    background: #e0f2fe;
+    color: var(--ink);
+    box-shadow: 0 4px 0 var(--ink);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  }
+
+  .team-award-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+  }
+
+  .team-award-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--ink);
+  }
+
+  .team-award-btn.awarded {
+    color: #ffffff;
+    box-shadow: 0 0 0 3px #fde047, 0 4px 0 var(--ink);
+  }
+
+  /* ================== 4 BOTÕES GIGANTES ESTILO KAHOOT FOFO 3D ================== */
+  .options-grid {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .kahoot-btn {
+    position: relative;
+    overflow: hidden;
+    border: 4px solid var(--ink);
+    border-radius: 26px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 22px;
+    color: #ffffff;
+    font-family: inherit;
+    font-weight: 900;
+    font-size: clamp(17px, 1.85vw, 25px);
+    line-height: 1.2;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), filter 0.16s ease, opacity 0.24s ease, box-shadow 0.15s ease;
+  }
+
+  /* Brilho suave no topo da placa de jogo */
+  .kahoot-btn::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 14px;
+    right: 14px;
+    height: 30%;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+  }
+
+  .kahoot-btn[data-idx="0"] {
+    background: linear-gradient(180deg, var(--red-top) 0%, var(--red) 100%);
+    box-shadow: 0 8px 0 var(--red-edge), 0 12px 18px rgba(3, 58, 94, 0.25);
+  }
+  .kahoot-btn[data-idx="1"] {
+    background: linear-gradient(180deg, var(--blue-top) 0%, var(--blue) 100%);
+    box-shadow: 0 8px 0 var(--blue-edge), 0 12px 18px rgba(3, 58, 94, 0.25);
+  }
+  .kahoot-btn[data-idx="2"] {
+    background: linear-gradient(180deg, var(--yellow-top) 0%, var(--yellow) 100%);
+    box-shadow: 0 8px 0 var(--yellow-edge), 0 12px 18px rgba(3, 58, 94, 0.25);
+  }
+  .kahoot-btn[data-idx="3"] {
+    background: linear-gradient(180deg, var(--green-top) 0%, var(--green) 100%);
+    box-shadow: 0 8px 0 var(--green-edge), 0 12px 18px rgba(3, 58, 94, 0.25);
+  }
+
+  .kahoot-btn.enabled:hover {
+    transform: translateY(-3px) scale(1.02);
+    filter: brightness(1.06);
+  }
+
+  .kahoot-btn.enabled:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 var(--ink);
+  }
+
+  .kahoot-btn.correct-win {
+    border-color: #fde047;
+    box-shadow: 0 0 0 5px #4ade80, 0 10px 24px rgba(34, 197, 94, 0.55);
+    animation: answerPulse 0.7s ease-in-out 2;
+    z-index: 2;
+  }
+
+  .kahoot-btn.wrong-picked {
+    opacity: 0.55;
+    filter: saturate(0.55);
+  }
+
+  .kahoot-btn.dimmed {
+    opacity: 0.36;
+    filter: saturate(0.45);
+    cursor: default;
+  }
+
+  @keyframes answerPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }
+
+  .shape-badge {
+    width: clamp(50px, 5vw, 68px);
+    height: clamp(50px, 5vw, 68px);
+    border-radius: 18px;
+    background: rgba(15, 23, 42, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    gap: 2px;
+  }
+
+  .shape-badge svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .shape-letter {
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .opt-text {
+    flex: 1;
+    text-shadow: 0 2px 3px rgba(15, 23, 42, 0.38);
+  }
+
+  .opt-tag {
+    display: none;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 2.5px solid var(--ink);
+    font-size: 14px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .kahoot-btn.correct-win .opt-tag {
+    display: inline-block;
+    background: #fef08a;
+    color: var(--ink);
+  }
+
+  .kahoot-btn.wrong-picked .opt-tag {
+    display: inline-block;
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  /* ================== 3. PÓDIO FINAL ANIMADO ================== */
+  .podium-wrap {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 10px;
+  }
+
+  .podium-header {
+    text-align: center;
+  }
+
+  .podium-title {
+    font-size: clamp(30px, 3.6vw, 48px);
+  }
+
+  .podium-sub {
+    margin: 4px 0 0;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: clamp(14px, 1.4vw, 19px);
+    text-shadow: 0 2px 6px rgba(3, 58, 94, 0.65);
+  }
+
+  .podium-stage {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 24px;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .podium-mascot {
+    height: clamp(140px, 24vh, 225px);
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .podium-columns {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 16px;
+    height: 100%;
+    max-height: 350px;
+  }
+
+  .podium-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    width: clamp(155px, 16vw, 220px);
+    height: 100%;
+  }
+
+  .podium-team-name {
+    font-weight: 900;
+    font-size: clamp(15px, 1.5vw, 20px);
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(15, 23, 42, 0.75);
+    margin-bottom: 4px;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+
+  .podium-team-pts {
+    padding: 4px 14px;
+    border-radius: 999px;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 15px;
+    border: 3px solid var(--ink);
+    margin-bottom: 8px;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+
+  .podium-col.revealed .podium-team-name,
+  .podium-col.revealed .podium-team-pts {
+    opacity: 1;
+  }
+
+  .podium-bar {
+    width: 100%;
+    height: 0px;
+    border-radius: 22px 22px 8px 8px;
+    border: 4px solid var(--ink);
+    box-shadow: 0 8px 0 var(--ink), inset 0 4px 0 rgba(255, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 14px;
+    font-weight: 900;
+    font-size: clamp(18px, 1.8vw, 24px);
+    color: var(--ink);
+    overflow: hidden;
+    transition: height 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .podium-bar.gold { background: linear-gradient(180deg, #fef08a 0%, #eab308 100%); }
+  .podium-bar.silver { background: linear-gradient(180deg, #f8fafc 0%, #94a3b8 100%); }
+  .podium-bar.bronze { background: linear-gradient(180deg, #fed7aa 0%, #ea580c 100%); }
+
+  .fourth-place-pill {
+    background: #ffffff;
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 6px 20px;
+    font-weight: 900;
+    font-size: 15px;
+    box-shadow: 0 4px 0 var(--ink);
+  }
+
+  .podium-actions {
+    display: flex;
+    gap: 14px;
+    padding-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- CENÁRIO VETORIAL SVG 100% OFF-LINE: CÉU AZUL, NUVENS FOFAS, ONDAS E VITÓRIAS-RÉGIAS -->
+  <div id="bg-layer" aria-hidden="true">
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skyWater" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#38bdf8"/>
+          <stop offset="56%" stop-color="#0ea5e9"/>
+          <stop offset="100%" stop-color="#0284c7"/>
+        </linearGradient>
+        <radialGradient id="sunRadial" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stop-color="#fef08a" stop-opacity="0.95"/>
+          <stop offset="65%" stop-color="#fde047" stop-opacity="0.45"/>
+          <stop offset="100%" stop-color="#fde047" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <rect width="1600" height="900" fill="url(#skyWater)"/>
+
+      <!-- Sol fofo no canto -->
+      <circle cx="1430" cy="115" r="145" fill="url(#sunRadial)"/>
+      <circle cx="1430" cy="115" r="54" fill="#fef08a" stroke="#facc15" stroke-width="6"/>
+
+      <!-- Nuvens fofinhas flutuantes -->
+      <g class="cloud-slow" fill="#ffffff" opacity="0.92">
+        <g transform="translate(150,105)">
+          <circle cx="0" cy="14" r="32"/><circle cx="38" cy="4" r="42"/><circle cx="82" cy="14" r="32"/><rect x="0" y="14" width="84" height="32" rx="16"/>
+        </g>
+        <g transform="translate(760,72) scale(1.15)">
+          <circle cx="0" cy="14" r="30"/><circle cx="36" cy="2" r="40"/><circle cx="76" cy="14" r="28"/><rect x="0" y="14" width="76" height="30" rx="15"/>
+        </g>
+      </g>
+      <g class="cloud-fast" fill="#ffffff" opacity="0.82">
+        <g transform="translate(1120,125) scale(0.95)">
+          <circle cx="0" cy="14" r="28"/><circle cx="34" cy="4" r="38"/><circle cx="72" cy="14" r="28"/><rect x="0" y="14" width="72" height="28" rx="14"/>
+        </g>
+        <g transform="translate(460,138) scale(0.75)">
+          <circle cx="0" cy="14" r="28"/><circle cx="34" cy="4" r="38"/><circle cx="72" cy="14" r="28"/><rect x="0" y="14" width="72" height="28" rx="14"/>
+        </g>
+      </g>
+
+      <!-- Gotinhas decorativas no ar -->
+      <g class="drop-float" fill="#bae6fd" opacity="0.65">
+        <path d="M120,300 C120,300 134,322 134,332 A14,14 0 1,1 106,332 C106,322 120,300 120,300 Z"/>
+        <path d="M1495,295 C1495,295 1508,315 1508,324 A13,13 0 1,1 1482,324 C1482,315 1495,295 1495,295 Z"/>
+      </g>
+
+      <!-- Ondas de rio animadas na base -->
+      <g class="wave-back">
+        <path d="M-80,715 Q120,675 320,715 T720,715 T1120,715 T1520,715 T1760,715 L1760,920 L-80,920 Z" fill="#0369a1" opacity="0.55"/>
+      </g>
+      <g class="wave-front">
+        <path d="M-80,765 Q150,725 380,765 T840,765 T1300,765 T1760,765 L1760,920 L-80,920 Z" fill="#0ea5e9" opacity="0.72"/>
+        <path d="M-80,815 Q160,785 400,815 T880,815 T1360,815 T1760,815 L1760,920 L-80,920 Z" fill="#0284c7"/>
+        <path d="M220,835 Q290,822 360,835 M720,852 Q810,838 900,852 M1180,832 Q1260,818 1340,832" stroke="#bae6fd" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7"/>
+      </g>
+
+      <!-- Vitórias-régias decorativas nas bordas inferiores -->
+      <g transform="translate(150,845)">
+        <ellipse cx="0" cy="0" rx="84" ry="26" fill="#22c55e" stroke="#14532d" stroke-width="4"/>
+        <ellipse cx="0" cy="-3" rx="68" ry="19" fill="#4ade80"/>
+        <circle cx="-22" cy="-12" r="12" fill="#f472b6" stroke="#831843" stroke-width="2.5"/>
+        <circle cx="-22" cy="-12" r="5" fill="#fef08a"/>
+      </g>
+      <g transform="translate(1435,840)">
+        <ellipse cx="0" cy="0" rx="92" ry="28" fill="#22c55e" stroke="#14532d" stroke-width="4"/>
+        <ellipse cx="0" cy="-3" rx="74" ry="20" fill="#4ade80"/>
+        <circle cx="26" cy="-12" r="13" fill="#f472b6" stroke="#831843" stroke-width="2.5"/>
+        <circle cx="26" cy="-12" r="5" fill="#fef08a"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- CANVAS DE CONFETES E GOTINHAS -->
+  <canvas id="fx-canvas"></canvas>
+
+  <!-- INTERFACE PRINCIPAL -->
+  <div id="app">
+    <!-- BARRA SUPERIOR ARREDONDADA -->
+    <header class="toy-card top-bar">
+      <div class="brand-row">
+        <img id="brand-logo" class="brand-logo" alt="Logo S.A.P.A.">
+        <span class="brand-tag" id="top-brand-text">S.A.P.A. • Sistema de Alerta e Previsão contra Alagamentos</span>
+        <span class="q-num-badge" id="q-counter-badge" style="display:none;">1 / 10</span>
+      </div>
+
+      <div class="hud-score-pills" id="hud-scores"></div>
+
+      <div class="top-controls">
+        <button class="kid-btn" id="btn-sound" type="button">🔊 Som: ON</button>
+        <button class="kid-btn sky" id="btn-fullscreen" type="button">⛶ Tela Cheia (F11)</button>
+      </div>
+    </header>
+
+    <!-- 1. TELA INICIAL -->
+    <section id="screen-start" class="screen active">
+      <div class="start-grid">
+        <div class="start-hero pop-in">
+          <span class="badge-5ano">💧 MISSÃO GUARDIÕES DOS RIOS • 5º ANO</span>
+          <h1 class="cartoon-title start-title">QUIZ DO S.A.P.A.</h1>
+
+          <!-- Balão de HQ apontando para o sapinho -->
+          <div class="comic-bubble tail-bottom start-bubble" id="start-bubble">
+            "Olá, turma! Escolham as equipes e vamos proteger os rios!"
+          </div>
+
+          <!-- Sapinho solto diretamente na vitória-régia -->
+          <div class="lily-spot">
+            <div class="start-mascot-wrap">
+              <img id="start-mascot-img" class="mascot-img anim-hop" alt="Mascote S.A.P.A. acenando">
+            </div>
+            <div class="frog-shadow"></div>
+            <svg class="lily-pad-svg" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="130" cy="36" rx="120" ry="24" fill="#16a34a" stroke="#14532d" stroke-width="4"/>
+              <ellipse cx="130" cy="31" rx="105" ry="18" fill="#4ade80"/>
+              <polygon points="130,31 154,18 130,33 106,18" fill="#0284c7"/>
+              <circle cx="42" cy="24" r="10" fill="#f472b6" stroke="#831843" stroke-width="2.5"/>
+              <circle cx="42" cy="24" r="4" fill="#fef08a"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="toy-card setup-card pop-in" style="animation-delay:0.08s">
+          <h2>🐸 Equipes Participantes (2 a 4)</h2>
+          <div class="count-pills" id="team-count-pills">
+            <button class="count-pill" type="button" data-count="2">2 Equipes</button>
+            <button class="count-pill" type="button" data-count="3">3 Equipes</button>
+            <button class="count-pill selected" type="button" data-count="4">4 Equipes</button>
+          </div>
+
+          <div class="team-inputs" id="team-inputs"></div>
+
+          <div style="font-weight:800; color:#0369a1; font-size:14px; text-align:center;">
+            💧 10 perguntas • ⏱ 25 segundos por rodada • ⭐ +100 pontos por acerto
+          </div>
+
+          <button class="start-cta" id="btn-start-game" type="button">
+            🚀 Começar Jogo!
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. TELA DA PERGUNTA & RESPOSTA -->
+    <section id="screen-quiz" class="screen">
+      <!-- BARRA DE TEMPO COM GOTINHA D'ÁGUA ANIMADA -->
+      <div class="toy-card timer-strip pop-in" id="timer-panel">
+        <div class="droplet-timer" id="droplet-timer" title="Tempo restante">
+          <svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="dropClip">
+                <path d="M32,4 C32,4 58,34 58,47 A26,26 0 1,1 6,47 C6,34 32,4 32,4 Z"/>
+              </clipPath>
+            </defs>
+            <path d="M32,4 C32,4 58,34 58,47 A26,26 0 1,1 6,47 C6,34 32,4 32,4 Z" fill="#e0f2fe"/>
+            <g clip-path="url(#dropClip)">
+              <rect id="drop-liquid-rect" x="0" y="4" width="64" height="68" fill="#22c55e"/>
+            </g>
+            <path d="M32,4 C32,4 58,34 58,47 A26,26 0 1,1 6,47 C6,34 32,4 32,4 Z" fill="none" stroke="#1e293b" stroke-width="4.5"/>
+          </svg>
+          <span class="droplet-num" id="timer-badge">25s</span>
+        </div>
+
+        <div class="timer-track">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+
+        <button class="kid-btn sky" id="btn-pause" type="button">⏸ Pausar</button>
+        <button class="kid-btn sunny" id="btn-reveal" type="button">👁 Revelar Resposta</button>
+      </div>
+
+      <!-- MASCOTE NA VITÓRIA-RÉGIA + BALÃO DE QUADRINHOS COM A PERGUNTA -->
+      <div class="question-stage" id="question-stage">
+        <div class="lily-spot mascot-river-spot pop-in">
+          <div class="mascot-box">
+            <img id="quiz-mascot-img" class="mascot-img anim-breathe" alt="Mascote S.A.P.A.">
+          </div>
+          <div class="frog-shadow"></div>
+          <svg class="lily-pad-svg" style="max-width:205px;" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="130" cy="36" rx="120" ry="24" fill="#16a34a" stroke="#14532d" stroke-width="4"/>
+            <ellipse cx="130" cy="31" rx="105" ry="18" fill="#4ade80"/>
+            <polygon points="130,31 154,18 130,33 106,18" fill="#0284c7"/>
+          </svg>
+          <div class="mascot-mini-tag" id="quiz-mascot-tip">Vamos pensar juntos!</div>
+        </div>
+
+        <!-- GRANDE BALÃO HQ VINDO DO SAPINHO -->
+        <div class="comic-bubble tail-left question-bubble pop-in" style="animation-delay:0.06s">
+          <span class="topic-chip" id="q-topic">Tópico</span>
+          <h2 class="question-text" id="q-text">Carregando...</h2>
+        </div>
+      </div>
+
+      <!-- FEEDBACK EDUCATIVO + MARCAÇÃO DE EQUIPES -->
+      <div class="toy-card feedback-card" id="feedback-panel">
+        <div class="explanation-box" id="feedback-explanation"></div>
+        <div class="award-row">
+          <div class="award-teams" id="award-teams-container"></div>
+          <button class="kid-btn mint" id="btn-next" type="button" style="font-size:16px; padding:9px 20px;">
+            Próxima Pergunta ➡
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 BOTÕES GIGANTES ESTILO KAHOOT FOFO 3D -->
+      <div class="options-grid" id="options-grid">
+        <button class="kahoot-btn enabled" data-idx="0" type="button">
+          <span class="shape-badge">
+            <svg viewBox="0 0 40 40"><polygon points="20,5 36,34 4,34" fill="#ffffff"/></svg>
+            <span class="shape-letter">A</span>
+          </span>
+          <span class="opt-text" id="opt-text-0"></span>
+          <span class="opt-tag" id="opt-tag-0"></span>
+        </button>
+
+        <button class="kahoot-btn enabled" data-idx="1" type="button">
+          <span class="shape-badge">
+            <svg viewBox="0 0 40 40"><polygon points="20,4 36,20 20,36 4,20" fill="#ffffff"/></svg>
+            <span class="shape-letter">B</span>
+          </span>
+          <span class="opt-text" id="opt-text-1"></span>
+          <span class="opt-tag" id="opt-tag-1"></span>
+        </button>
+
+        <button class="kahoot-btn enabled" data-idx="2" type="button">
+          <span class="shape-badge">
+            <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="#ffffff"/></svg>
+            <span class="shape-letter">C</span>
+          </span>
+          <span class="opt-text" id="opt-text-2"></span>
+          <span class="opt-tag" id="opt-tag-2"></span>
+        </button>
+
+        <button class="kahoot-btn enabled" data-idx="3" type="button">
+          <span class="shape-badge">
+            <svg viewBox="0 0 40 40"><rect x="6" y="6" width="28" height="28" rx="4" fill="#ffffff"/></svg>
+            <span class="shape-letter">D</span>
+          </span>
+          <span class="opt-text" id="opt-text-3"></span>
+          <span class="opt-tag" id="opt-tag-3"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. TELA FINAL (PÓDIO ANIMADO) -->
+    <section id="screen-podium" class="screen">
+      <div class="podium-wrap">
+        <div class="podium-header pop-in">
+          <h1 class="cartoon-title podium-title" id="podium-headline">PÓDIO DOS GUARDIÕES!</h1>
+          <p class="podium-sub">Vocês arrasaram protegendo os rios e aprendendo com o S.A.P.A.!</p>
+        </div>
+
+        <div class="podium-stage">
+          <div class="lily-spot">
+            <div class="podium-mascot">
+              <img id="podium-mascot-left" class="mascot-img anim-victory" alt="Mascote comemorando">
+            </div>
+            <svg class="lily-pad-svg" style="max-width:185px;" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="130" cy="36" rx="120" ry="24" fill="#16a34a" stroke="#14532d" stroke-width="4"/>
+              <ellipse cx="130" cy="31" rx="105" ry="18" fill="#4ade80"/>
+            </svg>
+          </div>
+
+          <div class="podium-columns" id="podium-columns"></div>
+
+          <div class="lily-spot">
+            <div class="podium-mascot">
+              <img id="podium-mascot-right" class="mascot-img anim-hop" alt="Mascote acenando">
+            </div>
+            <svg class="lily-pad-svg" style="max-width:185px;" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="130" cy="36" rx="120" ry="24" fill="#16a34a" stroke="#14532d" stroke-width="4"/>
+              <ellipse cx="130" cy="31" rx="105" ry="18" fill="#4ade80"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="fourth-place-pill" id="fourth-place-pill" style="display:none;"></div>
+
+        <div class="podium-actions">
+          <button class="kid-btn mint" id="btn-play-again" type="button" style="font-size:18px; padding:11px 26px;">
+            🔄 Jogar Novamente
+          </button>
+          <button class="kid-btn" id="btn-exit" type="button" style="font-size:16px; padding:11px 22px;">
+            Sair
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+<script src="sapa_data.js"></script>
+<script>
+(function () {
+  const DATA = window.__SAPA_DATA__ || { sprites: {}, logo: "", questions: [] };
+  const TEAM_COLORS = ["#ef233c", "#2563eb", "#eab308", "#16a34a"];
+  const TEAM_ICONS = [
+    // Gotinha
+    '<svg class="team-icon-svg" viewBox="0 0 32 32"><path d="M16,3 C16,3 26,15 26,20.5 A10,10 0 1,1 6,20.5 C6,15 16,3 16,3 Z" fill="#38bdf8" stroke="#1e293b" stroke-width="2.5"/></svg>',
+    // Folha
+    '<svg class="team-icon-svg" viewBox="0 0 32 32"><path d="M6,26 C6,12 16,5 27,5 C27,16 20,26 6,26 Z" fill="#4ade80" stroke="#1e293b" stroke-width="2.5"/><path d="M6,26 L20,12" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    // Sol / Estrela
+    '<svg class="team-icon-svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="8" fill="#fde047" stroke="#1e293b" stroke-width="2.5"/><path d="M16,3 V6 M16,26 V29 M3,16 H6 M26,16 H29" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/></svg>',
+    // Onda
+    '<svg class="team-icon-svg" viewBox="0 0 32 32"><path d="M4,18 Q10,10 16,18 T28,18" fill="none" stroke="#0284c7" stroke-width="4" stroke-linecap="round"/><path d="M4,24 Q10,16 16,24 T28,24" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round"/></svg>'
+  ];
+  const DEFAULT_NAMES = [
+    "Equipe Sapo-Boi",
+    "Equipe Vitória-Régia",
+    "Equipe Igarapé",
+    "Equipe Guaraná",
+  ];
+  const ROUND_SECONDS = 25;
+  const POINTS_PER_HIT = 100;
+
+  /* ================== SINTETIZADOR WEB AUDIO OFF-LINE ================== */
+  const SoundFX = {
+    enabled: true,
+    ctx: null,
+    ensureCtx() {
+      if (!this.ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) this.ctx = new AC();
+      }
+      if (this.ctx && this.ctx.state === "suspended") {
+        this.ctx.resume().catch(() => {});
+      }
+    },
+    tone(freq, dur, type = "sine", vol = 0.16, delay = 0) {
+      if (!this.enabled) return;
+      this.ensureCtx();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime + delay;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(vol, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + dur + 0.02);
+    },
+    click() { this.tone(680, 0.06, "triangle", 0.14); },
+    tick() { this.tone(920, 0.05, "sine", 0.12); },
+    correct() {
+      this.tone(523.25, 0.10, "triangle", 0.18, 0.00);
+      this.tone(659.25, 0.10, "triangle", 0.18, 0.08);
+      this.tone(783.99, 0.18, "triangle", 0.22, 0.16);
+    },
+    wrong() {
+      this.tone(330, 0.14, "sawtooth", 0.10, 0.00);
+      this.tone(247, 0.24, "sawtooth", 0.10, 0.12);
+    },
+    coin() {
+      this.tone(784, 0.07, "sine", 0.16, 0.00);
+      this.tone(1174.66, 0.14, "sine", 0.18, 0.06);
+    },
+    fanfare() {
+      this.tone(523.25, 0.12, "triangle", 0.18, 0.00);
+      this.tone(659.25, 0.12, "triangle", 0.18, 0.11);
+      this.tone(783.99, 0.12, "triangle", 0.20, 0.22);
+      this.tone(1046.50, 0.36, "triangle", 0.24, 0.34);
+    }
+  };
+
+  /* ================== PARTÍCULAS: CONFETES, FOLHAS & GOTINHAS ================== */
+  const fxCanvas = document.getElementById("fx-canvas");
+  const fxCtx = fxCanvas.getContext("2d");
+  let particles = [];
+  let fxAnimId = null;
+
+  function resizeFx() {
+    fxCanvas.width = window.innerWidth;
+    fxCanvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resizeFx);
+  resizeFx();
+
+  function spawnCelebration(count = 68, continuous = false) {
+    const colors = ["#4ade80", "#fde047", "#ff4d6d", "#38bdf8", "#a855f7", "#ffffff"];
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * fxCanvas.width,
+        y: -20 - Math.random() * 260,
+        vx: (Math.random() - 0.5) * 3.2,
+        vy: 2.5 + Math.random() * 3.8,
+        rot: Math.random() * Math.PI * 2,
+        vrot: (Math.random() - 0.5) * 0.14,
+        size: 8 + Math.random() * 9,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        isLeaf: Math.random() < 0.35,
+        continuous
+      });
+    }
+    if (!fxAnimId) runFxLoop();
+  }
+
+  function clearCelebration() {
+    particles = [];
+    if (fxAnimId) {
+      cancelAnimationFrame(fxAnimId);
+      fxAnimId = null;
+    }
+    fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+  }
+
+  function runFxLoop() {
+    fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx + Math.sin(p.y * 0.03) * 0.8;
+      p.y += p.vy;
+      p.rot += p.vrot;
+
+      fxCtx.save();
+      fxCtx.translate(p.x, p.y);
+      fxCtx.rotate(p.rot);
+      fxCtx.fillStyle = p.color;
+      if (p.isLeaf) {
+        fxCtx.beginPath();
+        fxCtx.ellipse(0, 0, p.size * 0.85, p.size * 0.42, 0, 0, Math.PI * 2);
+        fxCtx.fill();
+      } else {
+        fxCtx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.66);
+      }
+      fxCtx.restore();
+
+      if (p.y > fxCanvas.height + 30) {
+        if (p.continuous && state.phase === "podium") {
+          p.y = -20;
+          p.x = Math.random() * fxCanvas.width;
+        } else {
+          particles.splice(i, 1);
+        }
+      }
+    }
+    if (particles.length > 0) {
+      fxAnimId = requestAnimationFrame(runFxLoop);
+    } else {
+      fxAnimId = null;
+    }
+  }
+
+  /* ================== ESTADO DO JOGO ================== */
+  const state = {
+    phase: "start", // start | question | answer | podium
+    teamCount: 4,
+    teamNames: [...DEFAULT_NAMES],
+    teams: [],
+    qIdx: 0,
+    timeLeft: ROUND_SECONDS,
+    lastWholeSec: ROUND_SECONDS,
+    paused: false,
+    pickedOption: null,
+    awardedSet: new Set(),
+    timerInterval: null,
+    mascotCycleInterval: null,
+    mascotFlip: false
+  };
+
+  /* ================== REFERÊNCIAS DOM ================== */
+  const screens = {
+    start: document.getElementById("screen-start"),
+    quiz: document.getElementById("screen-quiz"),
+    podium: document.getElementById("screen-podium"),
+  };
+
+  const brandLogo = document.getElementById("brand-logo");
+  const topBrandText = document.getElementById("top-brand-text");
+  const qCounterBadge = document.getElementById("q-counter-badge");
+  const hudScores = document.getElementById("hud-scores");
+  const btnSound = document.getElementById("btn-sound");
+  const btnFullscreen = document.getElementById("btn-fullscreen");
+
+  const startMascotImg = document.getElementById("start-mascot-img");
+  const teamCountPills = document.getElementById("team-count-pills");
+  const teamInputsWrap = document.getElementById("team-inputs");
+  const btnStartGame = document.getElementById("btn-start-game");
+
+  const timerPanel = document.getElementById("timer-panel");
+  const dropletTimer = document.getElementById("droplet-timer");
+  const dropLiquidRect = document.getElementById("drop-liquid-rect");
+  const timerBadge = document.getElementById("timer-badge");
+  const timerFill = document.getElementById("timer-fill");
+  const btnPause = document.getElementById("btn-pause");
+  const btnReveal = document.getElementById("btn-reveal");
+
+  const qTopic = document.getElementById("q-topic");
+  const qText = document.getElementById("q-text");
+  const quizMascotImg = document.getElementById("quiz-mascot-img");
+  const quizMascotTip = document.getElementById("quiz-mascot-tip");
+
+  const feedbackPanel = document.getElementById("feedback-panel");
+  const feedbackExplanation = document.getElementById("feedback-explanation");
+  const awardTeamsContainer = document.getElementById("award-teams-container");
+  const btnNext = document.getElementById("btn-next");
+  const optionButtons = Array.from(document.querySelectorAll(".kahoot-btn"));
+
+  const podiumHeadline = document.getElementById("podium-headline");
+  const podiumColumns = document.getElementById("podium-columns");
+  const podiumMascotLeft = document.getElementById("podium-mascot-left");
+  const podiumMascotRight = document.getElementById("podium-mascot-right");
+  const fourthPlacePill = document.getElementById("fourth-place-pill");
+  const btnPlayAgain = document.getElementById("btn-play-again");
+  const btnExit = document.getElementById("btn-exit");
+
+  /* ================== INICIALIZAÇÃO DE ASSETS ================== */
+  if (DATA.logo) brandLogo.src = DATA.logo;
+  else brandLogo.style.display = "none";
+
+  function setMascot(imgEl, pose, animClass) {
+    if (DATA.sprites[pose]) imgEl.src = DATA.sprites[pose];
+    imgEl.className = "mascot-img " + animClass;
+  }
+
+  function showScreen(name, phaseName = name) {
+    Object.values(screens).forEach((s) => s.classList.remove("active"));
+    screens[name].classList.add("active");
+    state.phase = phaseName;
+  }
+
+  function stopIntervals() {
+    if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+    if (state.mascotCycleInterval) { clearInterval(state.mascotCycleInterval); state.mascotCycleInterval = null; }
+  }
+
+  /* ================== TELA INICIAL ================== */
+  function renderTeamInputs() {
+    teamInputsWrap.innerHTML = "";
+    for (let i = 0; i < state.teamCount; i++) {
+      const row = document.createElement("div");
+      row.className = "team-input-row";
+
+      const badge = document.createElement("span");
+      badge.className = "team-emblem";
+      badge.style.background = TEAM_COLORS[i];
+      badge.textContent = String(i + 1);
+
+      const iconWrap = document.createElement("span");
+      iconWrap.innerHTML = TEAM_ICONS[i];
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.maxLength = 26;
+      input.value = state.teamNames[i] || DEFAULT_NAMES[i];
+      input.addEventListener("input", () => {
+        state.teamNames[i] = input.value;
+      });
+
+      row.appendChild(badge);
+      row.appendChild(iconWrap);
+      row.appendChild(input);
+      teamInputsWrap.appendChild(row);
+    }
+  }
+
+  teamCountPills.querySelectorAll(".count-pill").forEach((pill) => {
+    pill.addEventListener("click", () => {
+      SoundFX.click();
+      state.teamCount = Number(pill.dataset.count);
+      teamCountPills.querySelectorAll(".count-pill").forEach((p) => p.classList.remove("selected"));
+      pill.classList.add("selected");
+      renderTeamInputs();
+    });
+  });
+
+  function openStartScreen() {
+    stopIntervals();
+    clearCelebration();
+    qCounterBadge.style.display = "none";
+    topBrandText.style.display = "inline";
+    hudScores.innerHTML = "";
+    setMascot(startMascotImg, "waving", "anim-hop");
+    renderTeamInputs();
+    showScreen("start");
+  }
+
+  btnStartGame.addEventListener("click", () => {
+    SoundFX.correct();
+    state.teams = [];
+    for (let i = 0; i < state.teamCount; i++) {
+      const name = (state.teamNames[i] || "").trim() || DEFAULT_NAMES[i];
+      state.teams.push({ name, score: 0, color: TEAM_COLORS[i] });
+    }
+    state.qIdx = 0;
+    loadQuestion();
+  });
+
+  /* ================== RODADAS ================== */
+  function refreshHudScores() {
+    hudScores.innerHTML = "";
+    state.teams.forEach((t) => {
+      const pill = document.createElement("span");
+      pill.className = "score-pill";
+      pill.style.background = t.color;
+      pill.textContent = `${t.name}: ${t.score}`;
+      hudScores.appendChild(pill);
+    });
+  }
+
+  function updateTimerVisuals() {
+    const whole = Math.ceil(state.timeLeft);
+    const ratio = Math.max(0, Math.min(1, state.timeLeft / ROUND_SECONDS));
+    const pct = ratio * 100;
+    let color = "#22c55e";
+    if (state.timeLeft <= 5) {
+      color = "#ef4444";
+    } else if (state.timeLeft <= 12) {
+      color = "#f59e0b";
+    }
+
+    timerFill.style.width = pct + "%";
+    timerFill.style.background = color;
+
+    // Esvazia a gotinha d'água de cima para baixo (y de 4 a 72)
+    const dropY = 72 - ratio * 68;
+    dropLiquidRect.setAttribute("y", dropY.toFixed(1));
+    dropLiquidRect.setAttribute("fill", color);
+
+    timerBadge.textContent = state.paused ? "PAUSA" : `${whole}s`;
+    dropletTimer.classList.toggle("urgent", !state.paused && state.timeLeft > 0 && state.timeLeft <= 5);
+  }
+
+  function loadQuestion() {
+    stopIntervals();
+    clearCelebration();
+    const q = DATA.questions[state.qIdx];
+    state.timeLeft = ROUND_SECONDS;
+    state.lastWholeSec = ROUND_SECONDS;
+    state.paused = false;
+    state.pickedOption = null;
+    state.awardedSet = new Set();
+
+    topBrandText.style.display = "none";
+    qCounterBadge.style.display = "inline-block";
+    qCounterBadge.textContent = `${state.qIdx + 1} / ${DATA.questions.length}`;
+    refreshHudScores();
+
+    timerPanel.style.display = "flex";
+    feedbackPanel.classList.remove("visible");
+    btnPause.textContent = "⏸ Pausar";
+
+    qTopic.textContent = q.topic;
+    qText.textContent = q.question;
+    quizMascotTip.textContent = q.mascot_tip;
+
+    if (q.is_pollution) {
+      setMascot(quizMascotImg, "angry", "anim-angry");
+    } else {
+      state.mascotFlip = false;
+      setMascot(quizMascotImg, "idle", "anim-breathe");
+      state.mascotCycleInterval = setInterval(() => {
+        if (state.phase !== "question") return;
+        state.mascotFlip = !state.mascotFlip;
+        setMascot(quizMascotImg, state.mascotFlip ? "thinking" : "idle", "anim-breathe");
+      }, 3200);
+    }
+
+    optionButtons.forEach((btn, idx) => {
+      btn.className = "kahoot-btn enabled pop-in";
+      btn.style.animationDelay = `${0.05 + idx * 0.06}s`;
+      document.getElementById(`opt-text-${idx}`).textContent = q.options[idx];
+      document.getElementById(`opt-tag-${idx}`).textContent = "";
+    });
+
+    showScreen("quiz", "question");
+    updateTimerVisuals();
+
+    state.timerInterval = setInterval(() => {
+      if (state.phase !== "question" || state.paused) return;
+      state.timeLeft = Math.max(0, state.timeLeft - 0.1);
+      const whole = Math.ceil(state.timeLeft);
+      if (whole !== state.lastWholeSec) {
+        state.lastWholeSec = whole;
+        if (whole >= 1 && whole <= 5) SoundFX.tick();
+      }
+      updateTimerVisuals();
+      if (state.timeLeft <= 0) {
+        revealAnswer(true);
+      }
+    }, 100);
+  }
+
+  function revealAnswer(isTimeout = false) {
+    if (state.phase !== "question") return;
+    stopIntervals();
+    state.phase = "answer";
+
+    const q = DATA.questions[state.qIdx];
+    const correctIdx = q.correct;
+    const isWrongPick = !isTimeout && state.pickedOption !== null && state.pickedOption !== correctIdx;
+
+    if (isTimeout || isWrongPick) {
+      SoundFX.wrong();
+    } else {
+      SoundFX.correct();
+    }
+
+    optionButtons.forEach((btn, idx) => {
+      btn.classList.remove("enabled", "pop-in");
+      btn.style.animationDelay = "0s";
+      if (idx === correctIdx) {
+        btn.classList.add("correct-win");
+        document.getElementById(`opt-tag-${idx}`).textContent = "✓ CORRETA!";
+      } else if (state.pickedOption === idx) {
+        btn.classList.add("wrong-picked");
+        document.getElementById(`opt-tag-${idx}`).textContent = "✗ Ops!";
+      } else {
+        btn.classList.add("dimmed");
+      }
+    });
+
+    if (isTimeout || isWrongPick) {
+      setMascot(quizMascotImg, "sad", "anim-sad");
+      quizMascotTip.textContent = isTimeout ? "Tempo esgotado!" : "Quase! Veja a dica!";
+    } else {
+      setMascot(quizMascotImg, "victory", "anim-victory");
+      quizMascotTip.textContent = "Boa! +100 pontos!";
+      spawnCelebration(50, false);
+    }
+
+    timerPanel.style.display = "none";
+    const prefix = isTimeout ? "⏰ Tempo encerrado! " : "💡 Explicação do S.A.P.A.: ";
+    feedbackExplanation.textContent = prefix + q.explanation;
+
+    awardTeamsContainer.innerHTML = '<span class="award-label">Quem acertou? (+100 pts):</span>';
+    state.teams.forEach((team, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "team-award-btn";
+      btn.textContent = `+100 ${team.name}`;
+      btn.addEventListener("click", () => {
+        if (state.awardedSet.has(idx)) {
+          state.awardedSet.delete(idx);
+          team.score = Math.max(0, team.score - POINTS_PER_HIT);
+          btn.classList.remove("awarded");
+          btn.style.background = "#e0f2fe";
+          btn.textContent = `+100 ${team.name}`;
+          SoundFX.click();
+        } else {
+          state.awardedSet.add(idx);
+          team.score += POINTS_PER_HIT;
+          btn.classList.add("awarded");
+          btn.style.background = team.color;
+          btn.textContent = `✓ +100 ${team.name}`;
+          SoundFX.coin();
+        }
+        refreshHudScores();
+      });
+      awardTeamsContainer.appendChild(btn);
+    });
+
+    const isLast = state.qIdx === DATA.questions.length - 1;
+    btnNext.textContent = isLast ? "🏆 Ver Pódio Final!" : "Próxima Pergunta ➡";
+    feedbackPanel.classList.add("visible");
+  }
+
+  optionButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (state.phase !== "question") return;
+      state.pickedOption = Number(btn.dataset.idx);
+      revealAnswer(false);
+    });
+  });
+
+  btnPause.addEventListener("click", () => {
+    if (state.phase !== "question") return;
+    SoundFX.click();
+    state.paused = !state.paused;
+    btnPause.textContent = state.paused ? "▶ Continuar" : "⏸ Pausar";
+    updateTimerVisuals();
+  });
+
+  btnReveal.addEventListener("click", () => {
+    if (state.phase === "question") revealAnswer(false);
+  });
+
+  btnNext.addEventListener("click", () => {
+    SoundFX.click();
+    if (state.qIdx + 1 < DATA.questions.length) {
+      state.qIdx += 1;
+      loadQuestion();
+    } else {
+      openPodium();
+    }
+  });
+
+  /* ================== PÓDIO FINAL ANIMADO ================== */
+  function openPodium() {
+    stopIntervals();
+    showScreen("podium");
+    SoundFX.fanfare();
+    qCounterBadge.style.display = "none";
+    topBrandText.style.display = "inline";
+    refreshHudScores();
+
+    setMascot(podiumMascotLeft, "victory", "anim-victory");
+    setMascot(podiumMascotRight, "waving", "anim-hop");
+    spawnCelebration(88, true);
+
+    const ranked = [...state.teams].sort((a, b) => b.score - a.score);
+    const hasTie = ranked.length > 1 && ranked[0].score === ranked[1].score;
+    podiumHeadline.textContent = hasTie
+      ? "EMPATE NO TOPO DOS RIOS!"
+      : `PARABÉNS, ${ranked[0].name.toUpperCase()}!`;
+
+    const slots = [];
+    if (ranked[1]) slots.push({ rank: 2, team: ranked[1], h: 185, cls: "silver", medal: "🥈 2º LUGAR", delay: 650 });
+    slots.push({ rank: 1, team: ranked[0], h: 250, cls: "gold", medal: "🥇 1º LUGAR", delay: 1200 });
+    if (ranked[2]) slots.push({ rank: 3, team: ranked[2], h: 130, cls: "bronze", medal: "🥉 3º LUGAR", delay: 180 });
+
+    podiumColumns.innerHTML = "";
+    slots.forEach((slot) => {
+      const col = document.createElement("div");
+      col.className = "podium-col";
+
+      const nameEl = document.createElement("div");
+      nameEl.className = "podium-team-name";
+      nameEl.textContent = slot.team.name;
+
+      const ptsEl = document.createElement("div");
+      ptsEl.className = "podium-team-pts";
+      ptsEl.style.background = slot.team.color;
+      ptsEl.textContent = `${slot.team.score} pts`;
+
+      const bar = document.createElement("div");
+      bar.className = `podium-bar ${slot.cls}`;
+      bar.textContent = slot.medal;
+
+      col.appendChild(nameEl);
+      col.appendChild(ptsEl);
+      col.appendChild(bar);
+      podiumColumns.appendChild(col);
+
+      setTimeout(() => {
+        if (state.phase !== "podium") return;
+        bar.style.height = slot.h + "px";
+        col.classList.add("revealed");
+        SoundFX.coin();
+      }, slot.delay);
+    });
+
+    if (ranked[3]) {
+      fourthPlacePill.style.display = "inline-block";
+      fourthPlacePill.textContent = `4º Lugar: ${ranked[3].name} — ${ranked[3].score} pontos 👏`;
+    } else {
+      fourthPlacePill.style.display = "none";
+    }
+  }
+
+  btnPlayAgain.addEventListener("click", () => {
+    SoundFX.click();
+    openStartScreen();
+  });
+
+  btnExit.addEventListener("click", () => {
+    if (window.pywebview && window.pywebview.api) {
+      window.pywebview.api.close_app();
+    } else {
+      window.close();
+    }
+  });
+
+  /* ================== CONTROLES GLOBAIS ================== */
+  btnSound.addEventListener("click", () => {
+    SoundFX.enabled = !SoundFX.enabled;
+    btnSound.textContent = SoundFX.enabled ? "🔊 Som: ON" : "🔇 Som: OFF";
+    if (SoundFX.enabled) SoundFX.click();
+  });
+
+  function toggleFullscreen() {
+    SoundFX.click();
+    if (window.pywebview && window.pywebview.api) {
+      window.pywebview.api.toggle_fullscreen();
+    } else if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+  btnFullscreen.addEventListener("click", toggleFullscreen);
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "F11") {
+      e.preventDefault();
+      toggleFullscreen();
+      return;
+    }
+    if (state.phase === "question") {
+      const k = e.key.toLowerCase();
+      const map = { "1": 0, "a": 0, "2": 1, "b": 1, "3": 2, "c": 2, "4": 3, "d": 3 };
+      if (k in map) {
+        state.pickedOption = map[k];
+        revealAnswer(false);
+      } else if (e.code === "Space") {
+        e.preventDefault();
+        btnPause.click();
+      }
+    } else if (state.phase === "answer" && e.key === "Enter") {
+      btnNext.click();
+    }
+  });
+
+  openStartScreen();
+})();
+</script>
+</body>
+</html>
