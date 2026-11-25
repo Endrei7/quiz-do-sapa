@@ -225,14 +225,27 @@
   }
 
   .score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     border-radius: 999px;
-    padding: 3px 10px;
+    padding: 3px 9px 3px 5px;
     color: #ffffff;
     font-weight: 900;
     font-size: 12px;
     white-space: nowrap;
     border: 2px solid var(--ink);
     box-shadow: 0 2px 0 rgba(30, 41, 59, 0.85);
+  }
+
+  .hud-avatar-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1.5px solid var(--ink);
+    flex-shrink: 0;
   }
 
   .top-controls {
@@ -722,23 +735,23 @@
   .team-inputs.two-cols {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 7px 10px;
+    gap: 6px 10px;
   }
 
   .team-input-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     background: #f0f9ff;
     border: 2.5px solid #7dd3fc;
     border-radius: 16px;
-    padding: 5px 9px;
+    padding: 4px 9px;
   }
 
   .team-emblem {
-    width: 30px;
-    height: 30px;
-    border-radius: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
     display: grid;
     place-items: center;
     color: #ffffff;
@@ -749,10 +762,78 @@
     box-shadow: 0 2px 0 var(--ink);
   }
 
-  .team-icon-svg {
-    width: 20px;
-    height: 20px;
+  .avatar-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
     flex-shrink: 0;
+  }
+
+  .avatar-nav-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 8px;
+    border: 2px solid var(--ink);
+    background: #ffffff;
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 13px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 2px 0 var(--ink);
+    transition: transform 0.1s ease, background 0.1s ease;
+  }
+
+  .avatar-nav-btn:hover { background: #fef08a; }
+  .avatar-nav-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 var(--ink); }
+
+  .avatar-medallion {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2.5px solid var(--ink);
+    padding: 3px;
+    background: #ffffff;
+    box-shadow: 0 2px 0 var(--ink);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .avatar-medallion:hover {
+    transform: scale(1.06);
+  }
+
+  .avatar-medallion img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  .team-inputs.two-cols .team-emblem {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  .team-inputs.two-cols .avatar-nav-btn {
+    width: 19px;
+    height: 19px;
+    font-size: 11px;
+  }
+
+  .team-inputs.two-cols .avatar-medallion {
+    width: 34px;
+    height: 34px;
+    padding: 2px;
   }
 
   .team-input-row input {
@@ -763,10 +844,121 @@
     padding: 5px 9px;
     font-family: inherit;
     font-weight: 800;
-    font-size: 14.5px;
+    font-size: 14px;
     color: var(--ink);
     background: #ffffff;
     outline: none;
+  }
+
+  /* Modal da mini-grade 5x2 para escolha de mascote */
+  #avatar-picker-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.72);
+  }
+
+  #avatar-picker-modal.active {
+    display: flex;
+  }
+
+  .avatar-picker-card {
+    width: min(760px, 94vw);
+    background: #ffffff;
+    border: 4px solid var(--ink);
+    border-radius: 26px;
+    padding: 18px 22px 20px;
+    box-shadow: 0 12px 0 var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .avatar-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .avatar-picker-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 900;
+    color: #0369a1;
+  }
+
+  .avatar-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .avatar-option-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 6px;
+    border-radius: 16px;
+    border: 3px solid var(--ink);
+    background: #f0f9ff;
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--ink);
+    transition: transform 0.12s ease, background 0.12s ease;
+  }
+
+  .avatar-option-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: #fef9c3;
+  }
+
+  .avatar-option-btn.selected {
+    background: #bbf7d0;
+    box-shadow: 0 4px 0 #15803d;
+  }
+
+  .avatar-option-btn.taken {
+    opacity: 0.48;
+    background: #e2e8f0;
+  }
+
+  .avatar-option-btn.taken:disabled {
+    cursor: not-allowed;
+  }
+
+  .avatar-option-btn img {
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  .avatar-option-name {
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  .avatar-option-tag {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: 1.5px solid var(--ink);
+    background: #ffffff;
+    color: var(--ink);
   }
 
   .team-input-row input:focus {
@@ -955,9 +1147,12 @@
   }
 
   .team-award-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     border: 2.5px solid var(--ink);
     border-radius: 999px;
-    padding: 5px 12px;
+    padding: 4px 11px 4px 6px;
     font-family: inherit;
     font-weight: 900;
     font-size: 13px;
@@ -966,6 +1161,16 @@
     color: var(--ink);
     box-shadow: 0 3px 0 var(--ink);
     transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  }
+
+  .award-btn-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: #ffffff;
+    border: 1.5px solid var(--ink);
+    flex-shrink: 0;
   }
 
   .team-award-btn:hover {
@@ -1172,8 +1377,14 @@
     font-size: clamp(13px, 1.25vw, 16.5px);
   }
   #screen-quiz.answer-mode .team-award-btn {
-    padding: 4px 10px;
-    font-size: 12.5px;
+    padding: 3px 9px 3px 5px;
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  #screen-quiz.answer-mode .award-btn-avatar {
+    width: 20px;
+    height: 20px;
   }
   #screen-quiz.answer-mode .options-grid {
     gap: 9px;
@@ -1284,6 +1495,39 @@
     width: clamp(150px, 15.5vw, 215px);
   }
 
+  .podium-team-avatar-wrap {
+    width: clamp(54px, 8vh, 76px);
+    height: clamp(54px, 8vh, 76px);
+    border-radius: 50%;
+    border: 3.5px solid var(--ink);
+    background: radial-gradient(circle at 30% 25%, #ffffff 0%, #e0f2fe 100%);
+    box-shadow: 0 5px 0 var(--ink);
+    padding: 4px;
+    margin-bottom: 5px;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transform: translateY(10px) scale(0.85);
+    transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .podium-team-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  @keyframes podiumAvatarJump {
+    0%, 100% { transform: translateY(0) scale(1); }
+    40% { transform: translateY(-10px) scale(1.06); }
+    65% { transform: translateY(-3px) scale(0.98); }
+  }
+
+  .podium-col.revealed .podium-team-avatar-wrap {
+    opacity: 1;
+    animation: podiumAvatarJump 1.15s ease-in-out infinite;
+  }
+
   .podium-team-name {
     font-weight: 900;
     font-size: clamp(15px, 1.5vw, 20px);
@@ -1352,14 +1596,27 @@
   }
 
   .fourth-place-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: #ffffff;
     color: var(--ink);
     border: 2.5px solid var(--ink);
     border-radius: 999px;
-    padding: 4px 13px;
+    padding: 4px 12px 4px 7px;
     font-weight: 900;
     font-size: 13px;
     box-shadow: 0 3px 0 var(--ink);
+  }
+
+  .other-rank-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: #e0f2fe;
+    border: 1.5px solid var(--ink);
+    flex-shrink: 0;
   }
 
   .podium-actions {
@@ -1698,32 +1955,38 @@
     </section>
   </div>
 
+  <!-- Modal Seletor de Mascotes Amazonicos (5x2) -->
+  <div id="avatar-picker-modal" role="dialog" aria-modal="true" aria-labelledby="avatar-picker-title">
+    <div class="avatar-picker-card">
+      <div class="avatar-picker-header">
+        <h3 class="avatar-picker-title" id="avatar-picker-title">🦜 Escolha o Mascote da Equipe</h3>
+        <button class="kid-btn" id="btn-close-avatar-modal" type="button" style="font-size:14px; padding:7px 14px;">Fechar</button>
+      </div>
+      <div class="avatar-picker-grid" id="avatar-picker-grid"></div>
+    </div>
+  </div>
+
 <script src="sapa_data.js"></script>
 <script>
 (function () {
-  const DATA = window.__SAPA_DATA__ || { sprites: {}, logo: "", questions: [] };
+  const DATA = window.__SAPA_DATA__ || { sprites: {}, avatars: {}, logo: "", questions: [] };
   const TEAM_COLORS = [
     "#ef233c", "#2563eb", "#eab308", "#16a34a", "#06b6d4",
     "#f97316", "#ec4899", "#9333ea", "#0d9488", "#4f46e5"
   ];
-  const TEAM_ICONS = [
-    '<svg class="team-icon-svg" viewBox="0 0 32 32"><path d="M16,3 C16,3 26,15 26,20.5 A10,10 0 1,1 6,20.5 C6,15 16,3 16,3 Z" fill="#38bdf8" stroke="#1e293b" stroke-width="2.5"/></svg>',
-    '<svg class="team-icon-svg" viewBox="0 0 32 32"><path d="M6,26 C6,12 16,5 27,5 C27,16 20,26 6,26 Z" fill="#4ade80" stroke="#1e293b" stroke-width="2.5"/><path d="M6,26 L20,12" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round"/></svg>',
-    '<svg class="team-icon-svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="8" fill="#fde047" stroke="#1e293b" stroke-width="2.5"/><path d="M16,3 V6 M16,26 V29 M3,16 H6 M26,16 H29" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/></svg>',
-    '<svg class="team-icon-svg" viewBox="0 0 32 32"><path d="M4,18 Q10,10 16,18 T28,18" fill="none" stroke="#0284c7" stroke-width="4" stroke-linecap="round"/><path d="M4,24 Q10,16 16,24 T28,24" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round"/></svg>'
+  const TEAM_AVATARS = [
+    { id: "boto", label: "Boto-Cor-de-Rosa", defaultName: "Equipe Boto-Cor-de-Rosa" },
+    { id: "ariranha", label: "Ariranha", defaultName: "Equipe Ariranha" },
+    { id: "peixe_boi", label: "Peixe-Boi", defaultName: "Equipe Peixe-Boi" },
+    { id: "tartaruga", label: "Tartaruga", defaultName: "Equipe Tartaruga" },
+    { id: "onca", label: "Onça-Pintada", defaultName: "Equipe Onça-Pintada" },
+    { id: "preguica", label: "Preguiça", defaultName: "Equipe Preguiça" },
+    { id: "tucano", label: "Tucano", defaultName: "Equipe Tucano" },
+    { id: "arara", label: "Arara-Azul", defaultName: "Equipe Arara-Azul" },
+    { id: "pirarucu", label: "Pirarucu", defaultName: "Equipe Pirarucu" },
+    { id: "sapo", label: "Sapo-Boi", defaultName: "Equipe Sapo-Boi" }
   ];
-  const DEFAULT_NAMES = [
-    "Equipe Sapo-Boi",
-    "Equipe Vitória-Régia",
-    "Equipe Igarapé",
-    "Equipe Guaraná",
-    "Equipe Arara-Azul",
-    "Equipe Tucano",
-    "Equipe Boto-Rosa",
-    "Equipe Onça-Pintada",
-    "Equipe Tambaqui",
-    "Equipe Açaí",
-  ];
+  const DEFAULT_NAMES = TEAM_AVATARS.map((a) => a.defaultName);
   const ORDER_POINTS = [200, 150, 100, 50];
   const ORDER_MEDALS = ["🥇 1ª", "🥈 2ª", "🥉 3ª", "4ª", "5ª", "6ª", "7ª", "8ª", "9ª", "10ª"];
 
@@ -1879,7 +2142,10 @@
   const state = {
     phase: "start", // start | question | answer | podium
     teamCount: 4,
+    teamAvatars: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
     teamNames: [...DEFAULT_NAMES],
+    teamCustomName: Array(10).fill(false),
+    modalTeamIdx: null,
     teams: [],
     qIdx: 0,
     pickedOption: null,
@@ -1950,9 +2216,9 @@
   if (DATA.logo) brandLogo.src = DATA.logo;
   else brandLogo.style.display = "none";
 
-  // Pré-carrega todos os sprites em memória para troca instantânea sem piscar
+  // Pré-carrega todos os sprites e avatares em memória para troca instantânea sem piscar
   const _preloaded = [];
-  Object.values(DATA.sprites).forEach((src) => {
+  [...Object.values(DATA.sprites || {}), ...Object.values(DATA.avatars || {})].forEach((src) => {
     if (!src) return;
     const im = new Image();
     im.src = src;
@@ -2000,31 +2266,207 @@
   }
 
   /* ================== TELA INICIAL ================== */
+  const avatarPickerModal = document.getElementById("avatar-picker-modal");
+  const avatarPickerTitle = document.getElementById("avatar-picker-title");
+  const avatarPickerGrid = document.getElementById("avatar-picker-grid");
+  const btnCloseAvatarModal = document.getElementById("btn-close-avatar-modal");
+
+  function setTeamAvatar(teamIdx, targetAvatarIdx) {
+    const prevIdx = state.teamAvatars[teamIdx];
+    if (prevIdx === targetAvatarIdx) return;
+
+    const ownerIdx = state.teamAvatars.indexOf(targetAvatarIdx);
+    if (ownerIdx !== -1 && ownerIdx < state.teamCount && state.teamCount < TEAM_AVATARS.length) {
+      return;
+    }
+
+    if (ownerIdx !== -1) {
+      state.teamAvatars[ownerIdx] = prevIdx;
+      if (!state.teamCustomName[ownerIdx]) {
+        state.teamNames[ownerIdx] = TEAM_AVATARS[prevIdx].defaultName;
+      }
+    }
+
+    state.teamAvatars[teamIdx] = targetAvatarIdx;
+    if (!state.teamCustomName[teamIdx]) {
+      state.teamNames[teamIdx] = TEAM_AVATARS[targetAvatarIdx].defaultName;
+    }
+    renderTeamInputs();
+  }
+
+  function cycleTeamAvatar(teamIdx, dir) {
+    const total = TEAM_AVATARS.length;
+    const cur = state.teamAvatars[teamIdx];
+    const usedByOthers = new Set();
+    for (let j = 0; j < state.teamCount; j++) {
+      if (j !== teamIdx) usedByOthers.add(state.teamAvatars[j]);
+    }
+    for (let step = 1; step < total; step++) {
+      const candidate = (cur + dir * step + total * 2) % total;
+      if (!usedByOthers.has(candidate) || state.teamCount === total) {
+        SoundFX.click();
+        setTeamAvatar(teamIdx, candidate);
+        return;
+      }
+    }
+  }
+
+  function closeAvatarModal() {
+    state.modalTeamIdx = null;
+    if (avatarPickerModal) avatarPickerModal.classList.remove("active");
+  }
+
+  function openAvatarModal(teamIdx) {
+    state.modalTeamIdx = teamIdx;
+    if (!avatarPickerModal || !avatarPickerGrid) return;
+    if (avatarPickerTitle) {
+      avatarPickerTitle.textContent = `🦜 Escolha o Mascote — Equipe ${teamIdx + 1}`;
+    }
+
+    const activeOwnerByAvatar = new Map();
+    for (let j = 0; j < state.teamCount; j++) {
+      activeOwnerByAvatar.set(state.teamAvatars[j], j);
+    }
+
+    avatarPickerGrid.innerHTML = "";
+    TEAM_AVATARS.forEach((av, avIdx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "avatar-option-btn";
+      btn.dataset.avatarId = av.id;
+
+      const ownerIdx = activeOwnerByAvatar.get(avIdx);
+      const isSelected = ownerIdx === teamIdx;
+      const isTakenByOther = ownerIdx !== undefined && ownerIdx !== teamIdx;
+
+      if (isSelected) {
+        btn.classList.add("selected");
+      } else if (isTakenByOther && state.teamCount < TEAM_AVATARS.length) {
+        btn.classList.add("taken");
+        btn.disabled = true;
+      }
+
+      const img = document.createElement("img");
+      img.src = (DATA.avatars && DATA.avatars[av.id]) || "";
+      img.alt = av.label;
+
+      const labelEl = document.createElement("span");
+      labelEl.className = "avatar-option-name";
+      labelEl.textContent = av.label;
+
+      btn.appendChild(img);
+      btn.appendChild(labelEl);
+
+      if (isSelected) {
+        const tag = document.createElement("span");
+        tag.className = "avatar-option-tag";
+        tag.textContent = "Atual";
+        btn.appendChild(tag);
+      } else if (isTakenByOther) {
+        const tag = document.createElement("span");
+        tag.className = "avatar-option-tag";
+        tag.textContent = `Eq. ${ownerIdx + 1}`;
+        btn.appendChild(tag);
+      }
+
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        SoundFX.click();
+        setTeamAvatar(teamIdx, avIdx);
+        closeAvatarModal();
+      });
+
+      avatarPickerGrid.appendChild(btn);
+    });
+
+    avatarPickerModal.classList.add("active");
+  }
+
+  if (btnCloseAvatarModal) {
+    btnCloseAvatarModal.addEventListener("click", () => {
+      SoundFX.click();
+      closeAvatarModal();
+    });
+  }
+  if (avatarPickerModal) {
+    avatarPickerModal.addEventListener("click", (e) => {
+      if (e.target === avatarPickerModal) {
+        closeAvatarModal();
+      }
+    });
+  }
+
   function renderTeamInputs() {
     teamInputsWrap.innerHTML = "";
     teamInputsWrap.classList.toggle("two-cols", state.teamCount >= 6);
     for (let i = 0; i < state.teamCount; i++) {
+      const avIdx = state.teamAvatars[i];
+      const av = TEAM_AVATARS[avIdx] || TEAM_AVATARS[i % TEAM_AVATARS.length];
+      const color = TEAM_COLORS[i % TEAM_COLORS.length];
+
       const row = document.createElement("div");
       row.className = "team-input-row";
+      row.dataset.teamIdx = String(i);
 
       const badge = document.createElement("span");
       badge.className = "team-emblem";
-      badge.style.background = TEAM_COLORS[i % TEAM_COLORS.length];
+      badge.style.background = color;
       badge.textContent = String(i + 1);
 
-      const iconWrap = document.createElement("span");
-      iconWrap.innerHTML = TEAM_ICONS[i % TEAM_ICONS.length];
+      const selector = document.createElement("div");
+      selector.className = "avatar-selector";
+
+      const prevBtn = document.createElement("button");
+      prevBtn.type = "button";
+      prevBtn.className = "avatar-nav-btn avatar-prev-btn";
+      prevBtn.title = "Mascote anterior";
+      prevBtn.setAttribute("aria-label", `Mascote anterior da equipe ${i + 1}`);
+      prevBtn.textContent = "‹";
+      prevBtn.addEventListener("click", () => cycleTeamAvatar(i, -1));
+
+      const medallion = document.createElement("button");
+      medallion.type = "button";
+      medallion.className = "avatar-medallion";
+      medallion.style.borderColor = color;
+      medallion.style.background = `radial-gradient(circle at 30% 30%, #ffffff 0%, ${color}26 100%)`;
+      medallion.title = `${av.label} (clique para escolher)`;
+      medallion.setAttribute("aria-label", `Escolher mascote da equipe ${i + 1}: ${av.label}`);
+      medallion.dataset.avatarId = av.id;
+
+      const avImg = document.createElement("img");
+      avImg.src = (DATA.avatars && DATA.avatars[av.id]) || "";
+      avImg.alt = av.label;
+      medallion.appendChild(avImg);
+      medallion.addEventListener("click", () => {
+        SoundFX.click();
+        openAvatarModal(i);
+      });
+
+      const nextBtn = document.createElement("button");
+      nextBtn.type = "button";
+      nextBtn.className = "avatar-nav-btn avatar-next-btn";
+      nextBtn.title = "Próximo mascote";
+      nextBtn.setAttribute("aria-label", `Próximo mascote da equipe ${i + 1}`);
+      nextBtn.textContent = "›";
+      nextBtn.addEventListener("click", () => cycleTeamAvatar(i, 1));
+
+      selector.appendChild(prevBtn);
+      selector.appendChild(medallion);
+      selector.appendChild(nextBtn);
 
       const input = document.createElement("input");
       input.type = "text";
       input.maxLength = 26;
-      input.value = state.teamNames[i] || DEFAULT_NAMES[i];
+      input.value = state.teamNames[i] || av.defaultName;
       input.addEventListener("input", () => {
         state.teamNames[i] = input.value;
+        const trimmed = input.value.trim();
+        const curDefault = TEAM_AVATARS[state.teamAvatars[i]].defaultName;
+        state.teamCustomName[i] = trimmed !== "" && trimmed !== curDefault;
       });
 
       row.appendChild(badge);
-      row.appendChild(iconWrap);
+      row.appendChild(selector);
       row.appendChild(input);
       teamInputsWrap.appendChild(row);
     }
@@ -2064,11 +2506,21 @@
 
   btnStartGame.addEventListener("click", () => {
     if (state.phase !== "start" || !lockNav()) return;
+    closeAvatarModal();
     SoundFX.correct();
     state.teams = [];
     for (let i = 0; i < state.teamCount; i++) {
-      const name = (state.teamNames[i] || "").trim() || DEFAULT_NAMES[i];
-      state.teams.push({ name, score: 0, roundAward: 0, color: TEAM_COLORS[i] });
+      const av = TEAM_AVATARS[state.teamAvatars[i]] || TEAM_AVATARS[i % TEAM_AVATARS.length];
+      const name = (state.teamNames[i] || "").trim() || av.defaultName;
+      state.teams.push({
+        name,
+        score: 0,
+        roundAward: 0,
+        color: TEAM_COLORS[i % TEAM_COLORS.length],
+        avatarId: av.id,
+        avatarLabel: av.label,
+        avatarSrc: (DATA.avatars && DATA.avatars[av.id]) || ""
+      });
     }
     state.qIdx = 0;
     loadQuestion();
@@ -2081,7 +2533,16 @@
       const pill = document.createElement("span");
       pill.className = "score-pill";
       pill.style.background = t.color;
-      pill.textContent = `${t.name}: ${t.score}`;
+      if (t.avatarSrc) {
+        const img = document.createElement("img");
+        img.className = "hud-avatar-icon";
+        img.src = t.avatarSrc;
+        img.alt = t.avatarLabel || t.name;
+        pill.appendChild(img);
+      }
+      const txt = document.createElement("span");
+      txt.textContent = `${t.name}: ${t.score}`;
+      pill.appendChild(txt);
       hudScores.appendChild(pill);
     });
   }
@@ -2196,16 +2657,30 @@
       teamBtns.forEach((btn, idx) => {
         const orderPos = state.awardedOrder.indexOf(idx);
         const team = state.teams[idx];
+        let labelEl = btn.querySelector(".award-btn-label");
+        if (!labelEl) {
+          btn.textContent = "";
+          if (team.avatarSrc) {
+            const img = document.createElement("img");
+            img.className = "award-btn-avatar";
+            img.src = team.avatarSrc;
+            img.alt = team.avatarLabel || team.name;
+            btn.appendChild(img);
+          }
+          labelEl = document.createElement("span");
+          labelEl.className = "award-btn-label";
+          btn.appendChild(labelEl);
+        }
         if (orderPos !== -1) {
           const pts = (ORDER_POINTS[orderPos] ?? 50) * mult;
           const medal = ORDER_MEDALS[orderPos] || `${orderPos + 1}ª`;
           btn.classList.add("awarded");
           btn.style.background = team.color;
-          btn.textContent = `${medal} (+${pts}) ${team.name}`;
+          labelEl.textContent = `${medal} (+${pts}) ${team.name}`;
         } else {
           btn.classList.remove("awarded");
           btn.style.background = "#e0f2fe";
-          btn.textContent = `+${nextPts} ${team.name}`;
+          labelEl.textContent = `+${nextPts} ${team.name}`;
         }
       });
       refreshHudScores();
@@ -2391,15 +2866,32 @@
       ? "EMPATE NO TOPO DOS RIOS!"
       : `PARABÉNS, ${ranked[0].name.toUpperCase()}!`;
 
+    const isCompactViewport = window.innerHeight <= 740;
+    const h1 = isCompactViewport ? 146 : 195;
+    const h2 = isCompactViewport ? 108 : 145;
+    const h3 = isCompactViewport ? 74 : 100;
+
     const slots = [];
-    if (ranked[1]) slots.push({ rank: 2, team: ranked[1], h: 145, cls: "silver", medal: "🥈 2º LUGAR", delay: 650 });
-    slots.push({ rank: 1, team: ranked[0], h: 195, cls: "gold", medal: "🥇 1º LUGAR", delay: 1200 });
-    if (ranked[2]) slots.push({ rank: 3, team: ranked[2], h: 100, cls: "bronze", medal: "🥉 3º LUGAR", delay: 180 });
+    if (ranked[1]) slots.push({ rank: 2, team: ranked[1], h: h2, cls: "silver", medal: "🥈 2º LUGAR", delay: 650 });
+    slots.push({ rank: 1, team: ranked[0], h: h1, cls: "gold", medal: "🥇 1º LUGAR", delay: 1200 });
+    if (ranked[2]) slots.push({ rank: 3, team: ranked[2], h: h3, cls: "bronze", medal: "🥉 3º LUGAR", delay: 180 });
 
     podiumColumns.innerHTML = "";
     slots.forEach((slot) => {
       const col = document.createElement("div");
       col.className = "podium-col";
+
+      if (slot.team.avatarSrc) {
+        const avWrap = document.createElement("div");
+        avWrap.className = "podium-team-avatar-wrap";
+        avWrap.style.borderColor = slot.team.color || "#1e293b";
+        const avImg = document.createElement("img");
+        avImg.className = "podium-team-avatar";
+        avImg.src = slot.team.avatarSrc;
+        avImg.alt = slot.team.avatarLabel || slot.team.name;
+        avWrap.appendChild(avImg);
+        col.appendChild(avWrap);
+      }
 
       const nameEl = document.createElement("div");
       nameEl.className = "podium-team-name";
@@ -2433,7 +2925,16 @@
       ranked.slice(3).forEach((team, idx) => {
         const pill = document.createElement("span");
         pill.className = "fourth-place-pill";
-        pill.textContent = `${idx + 4}º ${team.name}: ${team.score} pts`;
+        if (team.avatarSrc) {
+          const avImg = document.createElement("img");
+          avImg.className = "other-rank-avatar";
+          avImg.src = team.avatarSrc;
+          avImg.alt = team.avatarLabel || team.name;
+          pill.appendChild(avImg);
+        }
+        const txt = document.createElement("span");
+        txt.textContent = `${idx + 4}º ${team.name}: ${team.score} pts`;
+        pill.appendChild(txt);
         otherRanksRow.appendChild(pill);
       });
     } else {
@@ -2475,6 +2976,11 @@
   btnFullscreen.addEventListener("click", toggleFullscreen);
 
   window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && avatarPickerModal && avatarPickerModal.classList.contains("active")) {
+      e.preventDefault();
+      closeAvatarModal();
+      return;
+    }
     if (e.key === "F11") {
       e.preventDefault();
       toggleFullscreen();

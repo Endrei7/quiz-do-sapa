@@ -21,6 +21,19 @@ SPRITE_NAMES = (
     "boss_defeated",
 )
 
+AVATAR_NAMES = (
+    "boto",
+    "ariranha",
+    "peixe_boi",
+    "tartaruga",
+    "onca",
+    "preguica",
+    "tucano",
+    "arara",
+    "pirarucu",
+    "sapo",
+)
+
 
 def encode_png_data_uri(rel_path: str) -> str:
     full_path = os.path.join(BASE_DIR, "web", rel_path.replace("/", os.sep))
@@ -36,6 +49,10 @@ def build():
         "sprites": {
             name: encode_png_data_uri(f"assets/sprites/{name}.png")
             for name in SPRITE_NAMES
+        },
+        "avatars": {
+            name: encode_png_data_uri(f"assets/avatars/{name}.png")
+            for name in AVATAR_NAMES
         },
         "logo": encode_png_data_uri("assets/sapa_logo.png"),
         "questions": QUESTIONS,
