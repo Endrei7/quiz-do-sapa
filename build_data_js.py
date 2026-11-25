@@ -1,4 +1,4 @@
-"""Gera web/sapa_data.js com caminhos relativos dentro de web/ e as 10 perguntas do S.A.P.A."""
+"""Gera web/sapa_data.js com caminhos locais dos sprites (sapinho + boss) e as 10 perguntas."""
 
 import json
 import os
@@ -7,11 +7,21 @@ from questions import QUESTIONS
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUT_JS = os.path.join(BASE_DIR, "web", "sapa_data.js")
 
+SPRITE_NAMES = (
+    "idle",
+    "victory",
+    "thinking",
+    "sad",
+    "angry",
+    "waving",
+    "boss_laugh",
+    "boss_attack",
+    "boss_angry",
+    "boss_defeated",
+)
+
 payload = {
-    "sprites": {
-        name: f"assets/sprites/{name}.png"
-        for name in ("idle", "victory", "thinking", "sad", "angry", "waving")
-    },
+    "sprites": {name: f"assets/sprites/{name}.png" for name in SPRITE_NAMES},
     "logo": "assets/sapa_logo.png",
     "questions": QUESTIONS,
 }

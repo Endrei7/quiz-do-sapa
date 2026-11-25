@@ -5,7 +5,11 @@ window.__SAPA_DATA__ = {
     "thinking": "assets/sprites/thinking.png",
     "sad": "assets/sprites/sad.png",
     "angry": "assets/sprites/angry.png",
-    "waving": "assets/sprites/waving.png"
+    "waving": "assets/sprites/waving.png",
+    "boss_laugh": "assets/sprites/boss_laugh.png",
+    "boss_attack": "assets/sprites/boss_attack.png",
+    "boss_angry": "assets/sprites/boss_angry.png",
+    "boss_defeated": "assets/sprites/boss_defeated.png"
   },
   "logo": "assets/sapa_logo.png",
   "questions": [
@@ -136,18 +140,20 @@ window.__SAPA_DATA__ = {
       "mascot_tip": "O S.A.P.A. vai para todo lugar!"
     },
     {
-      "topic": "Tópico 8 • Você também ajuda!",
-      "question": "Qual é a melhor atitude do dia a dia para ajudar a evitar alagamentos?",
+      "topic": "⚡ CHEFE FINAL • 200 PONTOS (2x)",
+      "question": "Bwahahaha! Eu e meu exército de plástico vamos entupir os bueiros e agitar o rio! O que o S.A.P.A. e vocês fazem juntos para me derrotar e evitar a enchente?",
       "options": [
-        "Esconder sacolas plásticas dentro dos bueiros",
-        "Jogar o lixo sempre na lixeira, nunca no chão ou no rio",
-        "Deixar garrafas na calçada para a chuva levar embora",
-        "Jogar lixo na rua só quando estiver chovendo forte"
+        "Deixar as garrafas na calçada esperando a água da chuva sumir sozinha",
+        "A câmera com IA confirma o lixo e vigia a correnteza para tocar o alarme, e vocês jogam o lixo na lixeira!",
+        "Desligar a câmera do vigia do rio e esconder sacolas dentro dos bueiros",
+        "Esperar a água invadir casas e escolas para só depois olhar o rio"
       ],
       "correct": 1,
-      "explanation": "Cada garrafa jogada na lixeira — e nunca no chão ou no rio — mantém os bueiros limpos e ajuda a evitar alagamentos!",
+      "explanation": "Vitória dos Guardiões! O S.A.P.A. usa câmera + IA para confirmar o lixo e vigiar a correnteza, toca o alarme na hora certa — e vocês ajudam jogando cada garrafa na lixeira!",
       "is_pollution": true,
-      "mascot_tip": "Lixo na lixeira, rio limpo e seguro!"
+      "is_boss": true,
+      "points": 200,
+      "mascot_tip": "Foco total, turma! Vale o DOBRO!"
     }
   ]
 };
