@@ -189,10 +189,17 @@ def main():
             (() => {
               const stageRect = document.querySelector('.podium-stage').getBoundingClientRect();
               const footerRect = document.querySelector('.podium-footer').getBoundingClientRect();
+              const headerRect = document.querySelector('.podium-header').getBoundingClientRect();
+              const r1Wrap = document.querySelector('.podium-col.rank-1 .podium-team-avatar-wrap');
+              const r2Wrap = document.querySelector('.podium-col.rank-2 .podium-team-avatar-wrap');
+              const r1Rect = r1Wrap ? r1Wrap.getBoundingClientRect() : null;
               return {
                 active: document.getElementById('screen-podium').classList.contains('active'),
                 podiumPts: Array.from(document.querySelectorAll('.podium-team-pts')).map(el => el.textContent),
                 podiumAvatarCount: document.querySelectorAll('.podium-team-avatar').length,
+                rank1AvatarHeight: r1Wrap ? Math.round(r1Wrap.offsetHeight) : 0,
+                rank2AvatarHeight: r2Wrap ? Math.round(r2Wrap.offsetHeight) : 0,
+                headerToRank1AvatarGap: r1Rect ? Math.round(r1Rect.top - headerRect.bottom) : 0,
                 otherRanksCount: document.querySelectorAll('#other-ranks-row .fourth-place-pill').length,
                 otherRankAvatarCount: document.querySelectorAll('#other-ranks-row .other-rank-avatar').length,
                 brokenPodiumImgs: Array.from(document.querySelectorAll('#screen-podium img')).filter(im => im.offsetParent !== null && im.naturalWidth === 0).length,
@@ -234,8 +241,11 @@ def main():
     assert all(q["brokenVisibleImgs"] == 0 for q in results["questions"])
     assert not any(q["overflowY"] or q["overflowAfterReveal"] for q in results["questions"])
     assert results["podium"]["active"] and results["podium"]["podiumAvatarCount"] == 3
+    assert results["podium"]["rank1AvatarHeight"] >= 100
+    assert results["podium"]["rank2AvatarHeight"] >= 90
+    assert results["podium"]["headerToRank1AvatarGap"] >= 12
     assert results["podium"]["otherRanksCount"] == 7 and results["podium"]["otherRankAvatarCount"] == 7
-    assert results["podium"]["brokenPodiumImgs"] == 0 and results["podium"]["stageToFooterGap"] >= 4
+    assert results["podium"]["brokenPodiumImgs"] == 0 and results["podium"]["stageToFooterGap"] >= 6
     assert not results["podium"]["overflowY"]
     print("ALL AUDIT + 720P + AVATARS + 10-TEAM + BOSS 2X TESTS PASSED!")
 
