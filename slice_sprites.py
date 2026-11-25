@@ -165,8 +165,10 @@ def extract_frog_from_cell(cell: Image.Image) -> Image.Image:
     if final_bbox:
         cropped = cropped.crop(final_bbox)
 
-    cropped.thumbnail((520, 520), Image.Resampling.LANCZOS)
-    return cropped
+    cropped.thumbnail((504, 504), Image.Resampling.LANCZOS)
+    padded = Image.new("RGBA", (cropped.width + 16, cropped.height + 16), (0, 0, 0, 0))
+    padded.paste(cropped, (8, 8))
+    return padded
 
 
 def main():

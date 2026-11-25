@@ -29,7 +29,7 @@ class DesktopApi:
             webview.windows[0].destroy()
 
 
-def create_app_window(api: DesktopApi, title: str = "Quiz do S.A.P.A. — Expedição na Floresta"):
+def create_app_window(api: DesktopApi, title: str = "Quiz do S.A.P.A. — Guardiões dos Rios"):
     index_file = resource_path(os.path.join("web", "index.html"))
     window = webview.create_window(
         title=title,
@@ -37,8 +37,8 @@ def create_app_window(api: DesktopApi, title: str = "Quiz do S.A.P.A. — Expedi
         js_api=api,
         width=1280,
         height=760,
-        min_size=(1024, 680),
-        background_color="#1a5343",
+        min_size=(1024, 660),
+        background_color="#0ea5e9",
     )
     return window
 
