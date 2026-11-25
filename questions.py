@@ -140,6 +140,6 @@ QUESTIONS = [
         "explanation": "Vitória dos Guardiões! Câmera + IA confirmam o lixo e vigiam a correnteza para tocar o alarme a tempo — e cada garrafa na lixeira mantém os bueiros livres!",
         "is_pollution": True,
         "is_boss": True,
-        "mascot_tip": "Vale o DOBRO: 400, 300, 200, 100!",
+        "mascot_tip": "Desafio Final: pontos em DOBRO (2x)!",
     },
 ]

@@ -13,9 +13,13 @@ Funciona **100% off-line** (sem dependência de internet, CDNs ou fontes externa
   - Seleção visual de **10 mascotes** (`Boto-Cor-de-Rosa`, `Ariranha`, `Peixe-Boi`, `Tartaruga`, `Onça-Pintada`, `Preguiça`, `Tucano`, `Arara-Azul`, `Pirarucu` e `Sapo-Boi`) com medalhão colorido, setas `<` `>` e mini-grade modal **5×2**.
   - Bloqueio automático de avatares repetidos (quando há menos de 10 equipes ativas) e troca direta entre equipes quando todas as 10 vagas estão ativas.
   - Sugestão automática do nome da equipe ao trocar o mascote, mantendo nomes personalizados digitados manualmente.
-- **Pontuação Manual por Ordem de Resposta (Sem Cronômetro):**
-  - **Questões 1 a 9:** `1ª equipe = +200 pts`, `2ª = +150 pts`, `3ª = +100 pts`, `4ª+ = +50 pts`.
-  - **Questão 10 — Fase Boss (2× Pontos!):** Enfrente o **Capitão Garrafão** (`400 / 400 HP`) com transição estilo história em quadrinhos, tema tempestade e pontuação dobrada (`1ª = +400 pts`, `2ª = +300 pts`, `3ª = +200 pts`, `4ª+ = +100 pts`).
+- **Pontuação Dinâmica por Quantidade de Equipes e Ordem de Resposta (Sem Cronômetro):**
+  - **Questões 1 a 9 (`N × 50` descendo de `50` em `50` pts até `50 pts`):**
+    - `4 equipes`: `200, 150, 100, 50 pts`
+    - `8 equipes`: `400, 350, 300, 250, 200, 150, 100, 50 pts`
+    - `9 equipes`: `450, 400, 350, 300, 250, 200, 150, 100, 50 pts`
+    - `10 equipes`: `500, 450, 400, 350, 300, 250, 200, 150, 100, 50 pts`
+  - **Questão 10 — Fase Boss (2× Pontos!):** Enfrente o **Capitão Garrafão** (HP proporcional ao topo da rodada: `400 HP` com 4 equipes até `1000 HP` com 10 equipes) com transição estilo história em quadrinhos, tema tempestade e pontuação dobrada (`1ª` de `+200` com 2 equipes até `+1000` com 10 equipes).
 - **Pódio Final Animado & Chuva de Confetes:** Colunas de 1º, 2º e 3º lugar com medalhões ampliados dos mascotes vencedores em destaque, pílulas com mini-avatares para 4º a 10º lugar e animação de comemoração.
 - **Responsivo para Projetores e TVs (`1280×720` até `1920×1080`):** Layout sem barras de rolagem (`overflow: hidden`) e proteção contra cliques duplos acidentais entre telas.
 

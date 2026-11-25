@@ -1727,7 +1727,7 @@
       <img id="boss-intro-img" class="boss-intro-sprite" alt="Capitão Garrafão">
       <div>
         <h2 class="boss-intro-title">⚠️ DESAFIO FINAL: O CAPITÃO GARRAFÃO APARECEU! ⚠️</h2>
-        <p class="boss-intro-sub">Ele quer entupir todos os bueiros e causar um alagamento! Na Fase Boss os pontos valem o <strong>DOBRO (2x)</strong>: 1ª +400 • 2ª +300 • 3ª +200 • 4ª+ +100!</p>
+        <p class="boss-intro-sub" id="boss-intro-sub">Ele quer entupir todos os bueiros e causar um alagamento! Na Fase Boss os pontos valem o <strong>DOBRO (2x)</strong>!</p>
         <button class="kid-btn sunny" id="btn-start-boss" type="button" style="font-size:18px; padding:11px 24px;">
           ⚔️ Enfrentar o Chefe!
         </button>
@@ -1797,8 +1797,8 @@
 
           <div class="team-inputs" id="team-inputs"></div>
 
-          <div style="font-weight:800; color:#0369a1; font-size:13.5px; text-align:center;">
-            💧 10 perguntas • Ordem: 200, 150, 100, 50 pts • ⚡ Boss Final vale 2x!
+          <div id="start-score-hint" style="font-weight:800; color:#0369a1; font-size:13.5px; text-align:center;">
+            💧 10 perguntas • 4 equipes (1ª +200 • 2ª +150 • 3ª +100 • 4ª +50 pts) • ⚡ Boss 2x!
           </div>
 
           <button class="start-cta" id="btn-start-game" type="button">
@@ -1993,8 +1993,31 @@
     { id: "sapo", label: "Sapo-Boi", defaultName: "Equipe Sapo-Boi" }
   ];
   const DEFAULT_NAMES = TEAM_AVATARS.map((a) => a.defaultName);
-  const ORDER_POINTS = [200, 150, 100, 50];
+  const STEP_POINTS = 50;
   const ORDER_MEDALS = ["🥇 1ª", "🥈 2ª", "🥉 3ª", "4ª", "5ª", "6ª", "7ª", "8ª", "9ª", "10ª"];
+
+  function getOrderPoints(orderPos, teamCount, mult = 1) {
+    const count = Math.max(2, Number(teamCount) || 4);
+    const step = Math.max(1, count - orderPos);
+    return step * STEP_POINTS * mult;
+  }
+
+  function formatScoreSequence(teamCount, mult = 1) {
+    const count = Math.max(2, Number(teamCount) || 4);
+    if (count <= 5) {
+      const parts = [];
+      for (let i = 0; i < count; i++) {
+        parts.push(`${i + 1}ª +${getOrderPoints(i, count, mult)}`);
+      }
+      return parts.join(" • ");
+    }
+    const p0 = getOrderPoints(0, count, mult);
+    const p1 = getOrderPoints(1, count, mult);
+    const p2 = getOrderPoints(2, count, mult);
+    const pLast = getOrderPoints(count - 1, count, mult);
+    const step = STEP_POINTS * mult;
+    return `1ª +${p0} • 2ª +${p1} • 3ª +${p2} … ${count}ª +${pLast} (-${step})`;
+  }
 
   /* ================== SINTETIZADOR WEB AUDIO OFF-LINE ================== */
   const SoundFX = {
@@ -2476,6 +2499,11 @@
       row.appendChild(input);
       teamInputsWrap.appendChild(row);
     }
+    const startScoreHint = document.getElementById("start-score-hint");
+    if (startScoreHint) {
+      const seq = formatScoreSequence(state.teamCount, 1);
+      startScoreHint.textContent = `💧 10 perguntas • ${state.teamCount} equipes (${seq} pts) • ⚡ Boss 2x!`;
+    }
   }
 
   teamCountPills.querySelectorAll(".count-pill").forEach((pill) => {
@@ -2577,13 +2605,17 @@
     qText.textContent = q.question;
     quizMascotTip.textContent = q.mascot_tip;
 
+    const nTeams = state.teams.length || state.teamCount;
+    const bossMaxHp = getOrderPoints(0, nTeams, 2);
+
     if (isBoss) {
       document.body.classList.add("boss-mode");
       bossSpot.hidden = false;
       bossHpPanel.classList.add("visible");
       bossHpFill.style.width = "100%";
-      bossHpText.textContent = "400 / 400 HP";
-      orderRulePill.textContent = "⚡ FASE BOSS (2x PONTOS!): 1ª +400 • 2ª +300 • 3ª +200 • 4ª+ +100";
+      bossHpText.textContent = `${bossMaxHp} / ${bossMaxHp} HP`;
+      orderRulePill.textContent = `⚡ FASE BOSS (2x!): ${formatScoreSequence(nTeams, 2)}`;
+      quizMascotTip.textContent = `Vale o DOBRO: 1ª +${bossMaxHp} pts!`;
       questionStage.classList.add("boss-layout");
       questionBubble.classList.remove("tail-left");
       questionBubble.classList.add("tail-right", "boss-bubble");
@@ -2598,7 +2630,7 @@
         setMascot(bossImg, bossPoses[bIdx], "boss-float");
       }, 2500);
     } else {
-      orderRulePill.textContent = "🏆 Ordem: 1ª +200 • 2ª +150 • 3ª +100 • 4ª+ +50";
+      orderRulePill.textContent = `🏆 Ordem (${nTeams} eq.): ${formatScoreSequence(nTeams, 1)}`;
       clearBossVisuals();
     }
 
@@ -2628,9 +2660,10 @@
   function triggerBossDefeat() {
     if (state.bossDefeated) return;
     state.bossDefeated = true;
+    const bossMaxHp = getOrderPoints(0, state.teams.length || state.teamCount, 2);
     bossHpPanel.classList.add("boss-hp-hit");
     bossHpFill.style.width = "0%";
-    bossHpText.textContent = "0 / 400 HP — DERROTADO!";
+    bossHpText.textContent = `0 / ${bossMaxHp} HP — DERROTADO!`;
     setMascot(bossImg, "boss_defeated", "boss-defeated-anim");
     bossTag.textContent = "Derrotado e tonto!";
     setMascot(quizMascotImg, "victory", "anim-victory-burst");
@@ -2648,18 +2681,19 @@
       : '<span class="award-label">Ordem de resposta:</span>';
 
     function updateAllAwardButtons() {
-      // Recalcula pontos da rodada com base na ordem (200, 150, 100, 50) * multiplicador Boss
+      const nTeams = state.teams.length || state.teamCount;
+      // Recalcula pontos da rodada dinamicamente por quantidade de equipes (-50 por posicao) * Boss
       state.teams.forEach((t) => {
         t.score = Math.max(0, t.score - (t.roundAward || 0));
         t.roundAward = 0;
       });
       state.awardedOrder.forEach((tIdx, pos) => {
-        const pts = (ORDER_POINTS[pos] ?? 50) * mult;
+        const pts = getOrderPoints(pos, nTeams, mult);
         state.teams[tIdx].roundAward = pts;
         state.teams[tIdx].score += pts;
       });
 
-      const nextPts = (ORDER_POINTS[state.awardedOrder.length] ?? 50) * mult;
+      const nextPts = getOrderPoints(state.awardedOrder.length, nTeams, mult);
       teamBtns.forEach((btn, idx) => {
         const orderPos = state.awardedOrder.indexOf(idx);
         const team = state.teams[idx];
@@ -2678,7 +2712,7 @@
           btn.appendChild(labelEl);
         }
         if (orderPos !== -1) {
-          const pts = (ORDER_POINTS[orderPos] ?? 50) * mult;
+          const pts = getOrderPoints(orderPos, nTeams, mult);
           const medal = ORDER_MEDALS[orderPos] || `${orderPos + 1}ª`;
           btn.classList.add("awarded");
           btn.style.background = team.color;
@@ -2832,6 +2866,11 @@
         state.phase = "boss_intro";
         document.body.classList.add("boss-mode");
         if (DATA.sprites.boss_laugh) bossIntroImg.src = DATA.sprites.boss_laugh;
+        const bossIntroSub = document.getElementById("boss-intro-sub");
+        if (bossIntroSub) {
+          const bossSeq = formatScoreSequence(state.teams.length || state.teamCount, 2);
+          bossIntroSub.innerHTML = `Ele quer entupir todos os bueiros e causar um alagamento! Na Fase Boss os pontos valem o <strong>DOBRO (2x)</strong>: ${bossSeq}!`;
+        }
         bossIntroOverlay.classList.add("active");
         SoundFX.bossAlert();
         state.bossIntroTimeout = setTimeout(enterBossBattle, 2600);

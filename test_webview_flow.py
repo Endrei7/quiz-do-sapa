@@ -105,7 +105,16 @@ def main():
               };
             })()
         """)
-        win.evaluate_js("document.querySelector('.count-pill[data-count=\"10\"]').click();")
+        results["score_hints"] = win.evaluate_js("""
+            (() => {
+              const hints = {};
+              [2, 4, 8, 9, 10].forEach((n) => {
+                document.querySelector(`.count-pill[data-count="${n}"]`).click();
+                hints[n] = document.getElementById('start-score-hint').textContent;
+              });
+              return hints;
+            })()
+        """)
         time.sleep(0.15)
         results["start"] = win.evaluate_js("""
             (() => {
@@ -213,12 +222,17 @@ def main():
     win.events.loaded += on_loaded
     webview.start(gui="edgechromium", http_server=False)
 
+    print("SCORE HINTS BY TEAM COUNT:", results["score_hints"])
     print("AVATARS 4-TEAM:", results["start4_avatars"])
     print("START (720p):", results["start"])
     print("Q0 (720p):", results["questions"][0])
     print("Q1 badge after double-click on Q0:", results["questions"][1]["badge"])
     print("Q9 Boss (720p):", results["questions"][9])
     print("PODIUM (720p):", results["podium"])
+
+    hints = results["score_hints"]
+    assert "+100" in hints["2"] and "+200" in hints["4"]
+    assert "+400" in hints["8"] and "+450" in hints["9"] and "+500" in hints["10"]
 
     av4 = results["start4_avatars"]
     assert av4["initIds"] == ["boto", "ariranha", "peixe_boi", "tartaruga"]
@@ -234,10 +248,16 @@ def main():
     assert results["questions"][1]["badge"] == "2 / 10", "Double-click skipped a question!"
     assert results["questions"][0]["hudAvatarCount"] == 10
     assert results["questions"][0]["btnAvatarCount"] == 10 and results["questions"][0]["brokenBtnAvatars"] == 0
+    assert "+500" in results["questions"][0]["btnSample"][0]
+    assert "+450" in results["questions"][0]["btnSample"][1]
+    assert "+400" in results["questions"][0]["btnSample"][2]
+    assert "+350" in results["questions"][0]["btnSample"][3]
+    assert "+300" in results["questions"][0]["btnSample"][4]
     assert results["questions"][0]["optHAfter"] >= 70
     assert results["questions"][9]["optHAfter"] >= 70, f"Boss optHAfter too small: {results['questions'][9]['optHAfter']}"
-    assert "+400" in results["questions"][9]["btnSample"][0]
-    assert "0 / 400 HP" in results["questions"][9]["bossHpAfter"]
+    assert "+1000" in results["questions"][9]["btnSample"][0]
+    assert "+600" in results["questions"][9]["btnSample"][4]
+    assert "0 / 1000 HP" in results["questions"][9]["bossHpAfter"]
     assert all(q["brokenVisibleImgs"] == 0 for q in results["questions"])
     assert not any(q["overflowY"] or q["overflowAfterReveal"] for q in results["questions"])
     assert results["podium"]["active"] and results["podium"]["podiumAvatarCount"] == 3
