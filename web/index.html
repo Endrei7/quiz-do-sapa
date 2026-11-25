@@ -217,20 +217,22 @@
   .hud-score-pills {
     display: flex;
     align-items: center;
-    gap: 6px;
-    flex-wrap: nowrap;
-    flex-shrink: 0;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
   }
 
   .score-pill {
     border-radius: 999px;
-    padding: 4px 11px;
+    padding: 3px 10px;
     color: #ffffff;
     font-weight: 900;
-    font-size: 12.5px;
+    font-size: 12px;
     white-space: nowrap;
-    border: 2.5px solid var(--ink);
-    box-shadow: 0 3px 0 rgba(30, 41, 59, 0.85);
+    border: 2px solid var(--ink);
+    box-shadow: 0 2px 0 rgba(30, 41, 59, 0.85);
   }
 
   .top-controls {
@@ -673,21 +675,22 @@
   .count-pills {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
     flex-wrap: wrap;
   }
 
   .count-pill {
     border: 3px solid var(--ink);
-    border-radius: 20px;
-    padding: 8px 18px;
+    border-radius: 14px;
+    padding: 6px 12px;
+    min-width: 42px;
     font-family: inherit;
     font-weight: 900;
     font-size: 15px;
     cursor: pointer;
     background: #e0f2fe;
     color: var(--ink);
-    box-shadow: 0 4px 0 var(--ink);
+    box-shadow: 0 3px 0 var(--ink);
     transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
   }
 
@@ -704,47 +707,54 @@
   .team-inputs {
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 7px;
+  }
+
+  .team-inputs.two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px 10px;
   }
 
   .team-input-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     background: #f0f9ff;
-    border: 3px solid #7dd3fc;
-    border-radius: 20px;
-    padding: 6px 12px;
+    border: 2.5px solid #7dd3fc;
+    border-radius: 16px;
+    padding: 5px 9px;
   }
 
   .team-emblem {
-    width: 38px;
-    height: 38px;
-    border-radius: 14px;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
     display: grid;
     place-items: center;
     color: #ffffff;
     font-weight: 900;
-    font-size: 15px;
+    font-size: 13px;
     flex-shrink: 0;
-    border: 3px solid var(--ink);
-    box-shadow: 0 3px 0 var(--ink);
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 2px 0 var(--ink);
   }
 
   .team-icon-svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
   }
 
   .team-input-row input {
     flex: 1;
+    min-width: 0;
     border: 2px solid #bae6fd;
-    border-radius: 14px;
-    padding: 7px 12px;
+    border-radius: 11px;
+    padding: 5px 9px;
     font-family: inherit;
     font-weight: 800;
-    font-size: 16px;
+    font-size: 14.5px;
     color: var(--ink);
     background: #ffffff;
     outline: none;
@@ -923,27 +933,29 @@
   .award-teams {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
+    flex: 1;
   }
 
   .award-label {
     color: var(--navy-border);
     font-weight: 900;
-    font-size: 15px;
+    font-size: 14px;
+    white-space: nowrap;
   }
 
   .team-award-btn {
-    border: 3px solid var(--ink);
+    border: 2.5px solid var(--ink);
     border-radius: 999px;
-    padding: 7px 15px;
+    padding: 5px 12px;
     font-family: inherit;
     font-weight: 900;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
     background: #e0f2fe;
     color: var(--ink);
-    box-shadow: 0 4px 0 var(--ink);
+    box-shadow: 0 3px 0 var(--ink);
     transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
   }
 
@@ -1224,15 +1236,24 @@
     margin-top: 4px;
   }
 
+  .other-ranks-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    max-width: 1120px;
+  }
+
   .fourth-place-pill {
     background: #ffffff;
     color: var(--ink);
-    border: 3px solid var(--ink);
+    border: 2.5px solid var(--ink);
     border-radius: 999px;
-    padding: 6px 20px;
+    padding: 4px 13px;
     font-weight: 900;
-    font-size: 14.5px;
-    box-shadow: 0 4px 0 var(--ink);
+    font-size: 13px;
+    box-shadow: 0 3px 0 var(--ink);
   }
 
   .podium-actions {
@@ -1337,7 +1358,7 @@
       <img id="boss-intro-img" class="boss-intro-sprite" alt="Capitão Garrafão">
       <div>
         <h2 class="boss-intro-title">⚠️ DESAFIO FINAL: O CAPITÃO GARRAFÃO APARECEU! ⚠️</h2>
-        <p class="boss-intro-sub">Ele quer entupir todos os bueiros e causar um alagamento! Respondam à pergunta final para derrotá-lo — a 1ª equipe a acertar ganha <strong>+200 PONTOS</strong>!</p>
+        <p class="boss-intro-sub">Ele quer entupir todos os bueiros e causar um alagamento! Na Fase Boss os pontos valem o <strong>DOBRO (2x)</strong>: 1ª +400 • 2ª +300 • 3ª +200 • 4ª+ +100!</p>
         <button class="kid-btn sunny" id="btn-start-boss" type="button" style="font-size:18px; padding:11px 24px;">
           ⚔️ Enfrentar o Chefe!
         </button>
@@ -1392,17 +1413,23 @@
         </div>
 
         <div class="toy-card setup-card pop-in" style="animation-delay:0.08s">
-          <h2>🐸 Equipes Participantes (2 a 4)</h2>
+          <h2>🐸 Equipes Participantes (2 a 10)</h2>
           <div class="count-pills" id="team-count-pills">
-            <button class="count-pill" type="button" data-count="2">2 Equipes</button>
-            <button class="count-pill" type="button" data-count="3">3 Equipes</button>
-            <button class="count-pill selected" type="button" data-count="4">4 Equipes</button>
+            <button class="count-pill" type="button" data-count="2">2</button>
+            <button class="count-pill" type="button" data-count="3">3</button>
+            <button class="count-pill selected" type="button" data-count="4">4</button>
+            <button class="count-pill" type="button" data-count="5">5</button>
+            <button class="count-pill" type="button" data-count="6">6</button>
+            <button class="count-pill" type="button" data-count="7">7</button>
+            <button class="count-pill" type="button" data-count="8">8</button>
+            <button class="count-pill" type="button" data-count="9">9</button>
+            <button class="count-pill" type="button" data-count="10">10</button>
           </div>
 
           <div class="team-inputs" id="team-inputs"></div>
 
-          <div style="font-weight:800; color:#0369a1; font-size:14px; text-align:center;">
-            💧 10 perguntas • Sem limite de tempo • 🏆 Ordem: 200, 150, 100 e 50 pts
+          <div style="font-weight:800; color:#0369a1; font-size:13.5px; text-align:center;">
+            💧 10 perguntas • Ordem: 200, 150, 100, 50 pts • ⚡ Boss Final vale 2x!
           </div>
 
           <button class="start-cta" id="btn-start-game" type="button">
@@ -1425,7 +1452,7 @@
 
       <!-- FAIXA DE CONTROLE DA RODADA (SEM TEMPO) -->
       <div class="toy-card action-strip pop-in" id="action-panel">
-        <span class="order-rule-pill">🏆 Pontuação por ordem: 1ª +200 • 2ª +150 • 3ª +100 • 4ª +50</span>
+        <span class="order-rule-pill" id="order-rule-pill">🏆 Ordem: 1ª +200 • 2ª +150 • 3ª +100 • 4ª+ +50</span>
         <button class="kid-btn sunny" id="btn-reveal" type="button">👁 Revelar Resposta</button>
       </div>
 
@@ -1550,7 +1577,7 @@
         </div>
 
         <div class="podium-footer">
-          <div class="fourth-place-pill" id="fourth-place-pill" style="display:none;"></div>
+          <div class="other-ranks-row" id="other-ranks-row" style="display:none;"></div>
 
           <div class="podium-actions">
             <button class="kid-btn mint" id="btn-play-again" type="button" style="font-size:18px; padding:11px 26px;">
@@ -1569,15 +1596,14 @@
 <script>
 (function () {
   const DATA = window.__SAPA_DATA__ || { sprites: {}, logo: "", questions: [] };
-  const TEAM_COLORS = ["#ef233c", "#2563eb", "#eab308", "#16a34a"];
+  const TEAM_COLORS = [
+    "#ef233c", "#2563eb", "#eab308", "#16a34a", "#06b6d4",
+    "#f97316", "#ec4899", "#9333ea", "#0d9488", "#4f46e5"
+  ];
   const TEAM_ICONS = [
-    // Gotinha
     '<svg class="team-icon-svg" viewBox="0 0 32 32"><path d="M16,3 C16,3 26,15 26,20.5 A10,10 0 1,1 6,20.5 C6,15 16,3 16,3 Z" fill="#38bdf8" stroke="#1e293b" stroke-width="2.5"/></svg>',
-    // Folha
     '<svg class="team-icon-svg" viewBox="0 0 32 32"><path d="M6,26 C6,12 16,5 27,5 C27,16 20,26 6,26 Z" fill="#4ade80" stroke="#1e293b" stroke-width="2.5"/><path d="M6,26 L20,12" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round"/></svg>',
-    // Sol / Estrela
     '<svg class="team-icon-svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="8" fill="#fde047" stroke="#1e293b" stroke-width="2.5"/><path d="M16,3 V6 M16,26 V29 M3,16 H6 M26,16 H29" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/></svg>',
-    // Onda
     '<svg class="team-icon-svg" viewBox="0 0 32 32"><path d="M4,18 Q10,10 16,18 T28,18" fill="none" stroke="#0284c7" stroke-width="4" stroke-linecap="round"/><path d="M4,24 Q10,16 16,24 T28,24" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round"/></svg>'
   ];
   const DEFAULT_NAMES = [
@@ -1585,9 +1611,15 @@
     "Equipe Vitória-Régia",
     "Equipe Igarapé",
     "Equipe Guaraná",
+    "Equipe Arara-Azul",
+    "Equipe Tucano",
+    "Equipe Boto-Rosa",
+    "Equipe Onça-Pintada",
+    "Equipe Tambaqui",
+    "Equipe Açaí",
   ];
   const ORDER_POINTS = [200, 150, 100, 50];
-  const ORDER_MEDALS = ["🥇 1ª", "🥈 2ª", "🥉 3ª", "4ª"];
+  const ORDER_MEDALS = ["🥇 1ª", "🥈 2ª", "🥉 3ª", "4ª", "5ª", "6ª", "7ª", "8ª", "9ª", "10ª"];
 
   /* ================== SINTETIZADOR WEB AUDIO OFF-LINE ================== */
   const SoundFX = {
@@ -1770,6 +1802,7 @@
   const btnStartGame = document.getElementById("btn-start-game");
 
   const actionPanel = document.getElementById("action-panel");
+  const orderRulePill = document.getElementById("order-rule-pill");
   const btnReveal = document.getElementById("btn-reveal");
 
   const qTopic = document.getElementById("q-topic");
@@ -1799,7 +1832,7 @@
   const podiumColumns = document.getElementById("podium-columns");
   const podiumMascotLeft = document.getElementById("podium-mascot-left");
   const podiumMascotRight = document.getElementById("podium-mascot-right");
-  const fourthPlacePill = document.getElementById("fourth-place-pill");
+  const otherRanksRow = document.getElementById("other-ranks-row");
   const btnPlayAgain = document.getElementById("btn-play-again");
   const btnExit = document.getElementById("btn-exit");
 
@@ -1841,17 +1874,18 @@
   /* ================== TELA INICIAL ================== */
   function renderTeamInputs() {
     teamInputsWrap.innerHTML = "";
+    teamInputsWrap.classList.toggle("two-cols", state.teamCount >= 6);
     for (let i = 0; i < state.teamCount; i++) {
       const row = document.createElement("div");
       row.className = "team-input-row";
 
       const badge = document.createElement("span");
       badge.className = "team-emblem";
-      badge.style.background = TEAM_COLORS[i];
+      badge.style.background = TEAM_COLORS[i % TEAM_COLORS.length];
       badge.textContent = String(i + 1);
 
       const iconWrap = document.createElement("span");
-      iconWrap.innerHTML = TEAM_ICONS[i];
+      iconWrap.innerHTML = TEAM_ICONS[i % TEAM_ICONS.length];
 
       const input = document.createElement("input");
       input.type = "text";
@@ -1950,7 +1984,8 @@
       bossSpot.hidden = false;
       bossHpPanel.classList.add("visible");
       bossHpFill.style.width = "100%";
-      bossHpText.textContent = "200 / 200 HP";
+      bossHpText.textContent = "400 / 400 HP";
+      orderRulePill.textContent = "⚡ FASE BOSS (2x PONTOS!): 1ª +400 • 2ª +300 • 3ª +200 • 4ª+ +100";
       questionStage.classList.add("boss-layout");
       questionBubble.classList.remove("tail-left");
       questionBubble.classList.add("tail-right", "boss-bubble");
@@ -1965,6 +2000,7 @@
         setMascot(bossImg, bossPoses[bIdx], "boss-float");
       }, 2500);
     } else {
+      orderRulePill.textContent = "🏆 Ordem: 1ª +200 • 2ª +150 • 3ª +100 • 4ª+ +50";
       clearBossVisuals();
     }
 
@@ -1995,37 +2031,40 @@
     if (state.bossDefeated) return;
     state.bossDefeated = true;
     bossHpFill.style.width = "0%";
-    bossHpText.textContent = "0 / 200 HP — DERROTADO!";
+    bossHpText.textContent = "0 / 400 HP — DERROTADO!";
     setMascot(bossImg, "boss_defeated", "boss-defeated-anim");
     bossTag.textContent = "Derrotado e tonto!";
     setMascot(quizMascotImg, "victory", "anim-victory-burst");
-    quizMascotTip.textContent = "Vitória! +200 pontos!";
+    quizMascotTip.textContent = "Vitória! Pontos em DOBRO!";
     spawnCelebration(82, false);
     SoundFX.bossDefeat();
   }
 
   function renderAwardButtons(isBoss) {
+    const mult = isBoss ? 2 : 1;
     const teamBtns = [];
-    awardTeamsContainer.innerHTML = '<span class="award-label">Ordem de resposta:</span>';
+    awardTeamsContainer.innerHTML = isBoss
+      ? '<span class="award-label">Ordem (2x BOSS!):</span>'
+      : '<span class="award-label">Ordem de resposta:</span>';
 
     function updateAllAwardButtons() {
-      // Recalcula pontos da rodada com base na ordem (200, 150, 100, 50)
+      // Recalcula pontos da rodada com base na ordem (200, 150, 100, 50) * multiplicador Boss
       state.teams.forEach((t) => {
         t.score = Math.max(0, t.score - (t.roundAward || 0));
         t.roundAward = 0;
       });
       state.awardedOrder.forEach((tIdx, pos) => {
-        const pts = ORDER_POINTS[pos] ?? 50;
+        const pts = (ORDER_POINTS[pos] ?? 50) * mult;
         state.teams[tIdx].roundAward = pts;
         state.teams[tIdx].score += pts;
       });
 
-      const nextPts = ORDER_POINTS[state.awardedOrder.length] ?? 50;
+      const nextPts = (ORDER_POINTS[state.awardedOrder.length] ?? 50) * mult;
       teamBtns.forEach((btn, idx) => {
         const orderPos = state.awardedOrder.indexOf(idx);
         const team = state.teams[idx];
         if (orderPos !== -1) {
-          const pts = ORDER_POINTS[orderPos] ?? 50;
+          const pts = (ORDER_POINTS[orderPos] ?? 50) * mult;
           const medal = ORDER_MEDALS[orderPos] || `${orderPos + 1}ª`;
           btn.classList.add("awarded");
           btn.style.background = team.color;
@@ -2245,11 +2284,17 @@
       }, slot.delay);
     });
 
-    if (ranked[3]) {
-      fourthPlacePill.style.display = "inline-block";
-      fourthPlacePill.textContent = `4º Lugar: ${ranked[3].name} — ${ranked[3].score} pontos 👏`;
+    otherRanksRow.innerHTML = "";
+    if (ranked.length > 3) {
+      otherRanksRow.style.display = "flex";
+      ranked.slice(3).forEach((team, idx) => {
+        const pill = document.createElement("span");
+        pill.className = "fourth-place-pill";
+        pill.textContent = `${idx + 4}º ${team.name}: ${team.score} pts`;
+        otherRanksRow.appendChild(pill);
+      });
     } else {
-      fourthPlacePill.style.display = "none";
+      otherRanksRow.style.display = "none";
     }
   }
 

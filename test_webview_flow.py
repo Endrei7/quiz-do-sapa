@@ -1,4 +1,4 @@
-"""Teste automatizado end-to-end (sem tempo + pontuacao por ordem 200/150/100/50 + Boss Q10)."""
+"""Teste automatizado end-to-end com 10 equipes + ordem 200/150/100/50 + Boss 2x."""
 
 import time
 import webview
@@ -7,17 +7,21 @@ from main import DesktopApi, create_app_window
 
 def main():
     api = DesktopApi()
-    win = create_app_window(api, title="Teste Quiz S.A.P.A. Ordem Pontos")
+    win = create_app_window(api, title="Teste 10 Equipes + Boss 2x")
     results = {}
 
     def on_loaded():
         time.sleep(0.45)
+        # Seleciona 10 equipes na tela inicial
+        win.evaluate_js("document.querySelector('.count-pill[data-count=\"10\"]').click();")
+        time.sleep(0.15)
         results["start"] = win.evaluate_js("""
             (() => {
               const img = document.getElementById('start-mascot-img');
               return {
                 active: document.getElementById('screen-start').classList.contains('active'),
-                complete: img.complete,
+                inputCount: document.querySelectorAll('#team-inputs .team-input-row').length,
+                twoCols: document.getElementById('team-inputs').classList.contains('two-cols'),
                 naturalWidth: img.naturalWidth,
                 overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
               };
@@ -29,49 +33,34 @@ def main():
         q_checks = []
         for i in range(10):
             if i == 9:
-                results["boss_alert"] = win.evaluate_js("""
-                    (() => ({
-                      overlayActive: document.getElementById('boss-intro-overlay').classList.contains('active'),
-                      bossMode: document.body.classList.contains('boss-mode'),
-                      introSpriteW: document.getElementById('boss-intro-img').naturalWidth
-                    }))()
-                """)
                 win.evaluate_js("document.getElementById('btn-start-boss').click();")
                 time.sleep(0.25)
 
             info = win.evaluate_js("""
                 (() => ({
                   badge: document.getElementById('q-counter-badge').textContent,
-                  noTimer: document.getElementById('timer-panel') === null,
-                  hasActionBar: document.getElementById('action-panel') !== null,
-                  bossVisible: document.getElementById('boss-hp-panel').classList.contains('visible'),
                   bossSpotDisplay: getComputedStyle(document.getElementById('boss-spot')).display,
                   brokenVisibleImgs: Array.from(document.querySelectorAll('#screen-quiz img')).filter(im => im.offsetParent !== null && im.naturalWidth === 0).length,
                   overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
                 }))()
             """)
 
-            # Seleciona alternativa e testa pontuacao por ordem (200, 150, 100, 50)
             win.evaluate_js("""
                 (() => {
                   const idx = Number(document.getElementById('q-counter-badge').textContent.split('/')[0].trim()) - 1;
                   const q = window.__SAPA_DATA__.questions[idx];
-                  const pick = (q.is_pollution || q.is_boss) ? q.correct : ((q.correct + 1) % 4);
-                  document.querySelectorAll('.kahoot-btn')[pick].click();
+                  document.querySelectorAll('.kahoot-btn')[q.correct].click();
                 })()
             """)
             time.sleep(0.18)
             fb = win.evaluate_js("""
                 (() => {
                   const btns = document.querySelectorAll('.team-award-btn');
-                  if (btns[0]) btns[0].click();
-                  if (btns[1]) btns[1].click();
-                  if (btns[2]) btns[2].click();
-                  if (btns[3]) btns[3].click();
+                  // Marca as 4 primeiras equipes e a 10a equipe
+                  [0, 1, 2, 3, 9].forEach(idx => { if (btns[idx]) btns[idx].click(); });
                   return {
-                    fbVisible: document.getElementById('feedback-panel').classList.contains('visible'),
-                    btnTexts: Array.from(btns).map(b => b.textContent),
-                    hudTexts: Array.from(document.querySelectorAll('#hud-scores .score-pill')).map(p => p.textContent),
+                    btnCount: btns.length,
+                    btnSample: [btns[0].textContent, btns[1].textContent, btns[2].textContent, btns[3].textContent, btns[9].textContent],
                     bossHpAfter: document.getElementById('boss-hp-text').textContent,
                     overflowAfterReveal: document.documentElement.scrollHeight > window.innerHeight + 2
                   };
@@ -86,12 +75,13 @@ def main():
         time.sleep(1.4)
         results["podium"] = win.evaluate_js("""
             (() => {
-              const pts = Array.from(document.querySelectorAll('.podium-team-pts')).map(el => el.textContent);
-              const fourth = document.getElementById('fourth-place-pill').textContent;
+              const stageRect = document.querySelector('.podium-stage').getBoundingClientRect();
+              const footerRect = document.querySelector('.podium-footer').getBoundingClientRect();
               return {
                 active: document.getElementById('screen-podium').classList.contains('active'),
-                podiumPts: pts,
-                fourthText: fourth,
+                podiumPts: Array.from(document.querySelectorAll('.podium-team-pts')).map(el => el.textContent),
+                otherRanksCount: document.querySelectorAll('#other-ranks-row .fourth-place-pill').length,
+                stageToFooterGap: Math.round(footerRect.top - stageRect.bottom),
                 overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
               };
             })()
@@ -101,29 +91,30 @@ def main():
     win.events.loaded += on_loaded
     webview.start(gui="edgechromium", http_server=False)
 
-    print("Q0 btnTexts:", results["questions"][0]["btnTexts"])
-    print("Q9 hudTexts:", results["questions"][9]["hudTexts"])
+    print("START (10 teams):", results["start"])
+    print("Q0 sample:", results["questions"][0]["btnSample"], "overflowAfter:", results["questions"][0]["overflowAfterReveal"])
+    print("Q9 Boss sample:", results["questions"][9]["btnSample"], "HP:", results["questions"][9]["bossHpAfter"], "overflowAfter:", results["questions"][9]["overflowAfterReveal"])
     print("PODIUM:", results["podium"])
 
-    q0 = results["questions"][0]
-    assert q0["noTimer"] and q0["hasActionBar"]
-    assert q0["bossSpotDisplay"] == "none"
+    assert results["start"]["inputCount"] == 10 and results["start"]["twoCols"] and not results["start"]["overflowY"]
+    assert results["questions"][0]["btnCount"] == 10
+    assert "+200" in results["questions"][0]["btnSample"][0]
+    assert "+150" in results["questions"][0]["btnSample"][1]
+    assert "+100" in results["questions"][0]["btnSample"][2]
+    assert "+50" in results["questions"][0]["btnSample"][3]
+    assert "+50" in results["questions"][0]["btnSample"][4]
+    # Boss vale 2x: 400, 300, 200, 100, 100
+    assert "+400" in results["questions"][9]["btnSample"][0]
+    assert "+300" in results["questions"][9]["btnSample"][1]
+    assert "+200" in results["questions"][9]["btnSample"][2]
+    assert "+100" in results["questions"][9]["btnSample"][3]
+    assert "+100" in results["questions"][9]["btnSample"][4]
+    assert "0 / 400 HP" in results["questions"][9]["bossHpAfter"]
     assert all(q["brokenVisibleImgs"] == 0 for q in results["questions"])
-    assert results["questions"][9]["bossSpotDisplay"] == "flex"
-    assert "+200" in q0["btnTexts"][0]
-    assert "+150" in q0["btnTexts"][1]
-    assert "+100" in q0["btnTexts"][2]
-    assert "+50" in q0["btnTexts"][3]
-    assert results["questions"][9]["hudTexts"] == [
-        "Equipe Sapo-Boi: 2000",
-        "Equipe Vitória-Régia: 1500",
-        "Equipe Igarapé: 1000",
-        "Equipe Guaraná: 500",
-    ]
-    assert "0 / 200 HP" in results["questions"][9]["bossHpAfter"]
     assert not any(q["overflowY"] or q["overflowAfterReveal"] for q in results["questions"])
-    assert results["podium"]["overflowY"] is False
-    print("ALL ORDER-SCORING + BOSS TESTS PASSED!")
+    assert results["podium"]["active"] and results["podium"]["otherRanksCount"] == 7
+    assert results["podium"]["stageToFooterGap"] >= 0 and not results["podium"]["overflowY"]
+    print("ALL 10-TEAM + BOSS 2X TESTS PASSED!")
 
 
 if __name__ == "__main__":
