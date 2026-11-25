@@ -782,68 +782,40 @@
   }
 
   /* ================== 2. TELA DA PERGUNTA & RESPOSTA ================== */
-  .timer-strip {
+  .action-strip {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 14px;
-    padding: 7px 16px;
-    border-radius: 24px;
+    padding: 8px 16px;
+    border-radius: 22px;
     flex-shrink: 0;
     box-shadow: 0 6px 0 var(--navy-border);
   }
 
-  /* Gotinha d'água circular animada do temporizador */
-  .droplet-timer {
-    position: relative;
-    width: 62px;
-    height: 66px;
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-  }
-
-  .droplet-timer.urgent {
-    animation: dropPulse 0.55s ease-in-out infinite;
-  }
-
-  @keyframes dropPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.13); }
-  }
-
-  .droplet-timer svg {
-    width: 60px;
-    height: 64px;
-    filter: drop-shadow(0 3px 0 rgba(30, 41, 59, 0.4));
-  }
-
-  .droplet-num {
-    position: absolute;
-    top: 56%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  .order-rule-pill {
     font-weight: 900;
-    font-size: 16px;
-    color: var(--ink);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
-  }
-
-  .timer-track {
-    flex: 1;
-    height: 22px;
+    font-size: clamp(13px, 1.25vw, 16px);
+    color: var(--navy-border);
     background: #e0f2fe;
+    border: 2.5px solid #7dd3fc;
     border-radius: 999px;
-    padding: 3px;
-    border: 3px solid var(--navy-border);
-    overflow: hidden;
+    padding: 5px 14px;
   }
 
-  .timer-fill {
-    height: 100%;
-    width: 100%;
+  .reset-round-btn {
+    border: 2.5px solid var(--ink);
     border-radius: 999px;
-    background: linear-gradient(90deg, #38bdf8, #22c55e);
-    transition: width 0.1s linear, background 0.45s ease;
+    padding: 6px 12px;
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 13px;
+    cursor: pointer;
+    background: #f1f5f9;
+    color: var(--ink);
+  }
+  .reset-round-btn:hover {
+    background: #e2e8f0;
   }
 
   /* Palco Pergunta: Sapinho na Vitória-Régia à esquerda + Grande Balão HQ à direita */
@@ -1365,7 +1337,7 @@
       <img id="boss-intro-img" class="boss-intro-sprite" alt="Capitão Garrafão">
       <div>
         <h2 class="boss-intro-title">⚠️ DESAFIO FINAL: O CAPITÃO GARRAFÃO APARECEU! ⚠️</h2>
-        <p class="boss-intro-sub">Ele quer entupir todos os bueiros e causar um alagamento! Respondam juntos à pergunta final valendo <strong>200 PONTOS (2x)</strong> para derrotá-lo!</p>
+        <p class="boss-intro-sub">Ele quer entupir todos os bueiros e causar um alagamento! Respondam à pergunta final para derrotá-lo — a 1ª equipe a acertar ganha <strong>+200 PONTOS</strong>!</p>
         <button class="kid-btn sunny" id="btn-start-boss" type="button" style="font-size:18px; padding:11px 24px;">
           ⚔️ Enfrentar o Chefe!
         </button>
@@ -1430,7 +1402,7 @@
           <div class="team-inputs" id="team-inputs"></div>
 
           <div style="font-weight:800; color:#0369a1; font-size:14px; text-align:center;">
-            💧 10 perguntas • ⏱ 25 segundos por rodada • ⭐ +100 pontos por acerto
+            💧 10 perguntas • Sem limite de tempo • 🏆 Ordem: 200, 150, 100 e 50 pts
           </div>
 
           <button class="start-cta" id="btn-start-game" type="button">
@@ -1451,29 +1423,9 @@
         <span class="boss-hp-text" id="boss-hp-text">200 / 200 HP</span>
       </div>
 
-      <!-- BARRA DE TEMPO COM GOTINHA D'ÁGUA ANIMADA -->
-      <div class="toy-card timer-strip pop-in" id="timer-panel">
-        <div class="droplet-timer" id="droplet-timer" title="Tempo restante">
-          <svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <clipPath id="dropClip">
-                <path d="M32,4 C32,4 58,34 58,47 A26,26 0 1,1 6,47 C6,34 32,4 32,4 Z"/>
-              </clipPath>
-            </defs>
-            <path d="M32,4 C32,4 58,34 58,47 A26,26 0 1,1 6,47 C6,34 32,4 32,4 Z" fill="#e0f2fe"/>
-            <g clip-path="url(#dropClip)">
-              <rect id="drop-liquid-rect" x="0" y="4" width="64" height="68" fill="#22c55e"/>
-            </g>
-            <path d="M32,4 C32,4 58,34 58,47 A26,26 0 1,1 6,47 C6,34 32,4 32,4 Z" fill="none" stroke="#1e293b" stroke-width="4.5"/>
-          </svg>
-          <span class="droplet-num" id="timer-badge">25s</span>
-        </div>
-
-        <div class="timer-track">
-          <div class="timer-fill" id="timer-fill"></div>
-        </div>
-
-        <button class="kid-btn sky" id="btn-pause" type="button">⏸ Pausar</button>
+      <!-- FAIXA DE CONTROLE DA RODADA (SEM TEMPO) -->
+      <div class="toy-card action-strip pop-in" id="action-panel">
+        <span class="order-rule-pill">🏆 Pontuação por ordem: 1ª +200 • 2ª +150 • 3ª +100 • 4ª +50</span>
         <button class="kid-btn sunny" id="btn-reveal" type="button">👁 Revelar Resposta</button>
       </div>
 
@@ -1634,8 +1586,8 @@
     "Equipe Igarapé",
     "Equipe Guaraná",
   ];
-  const ROUND_SECONDS = 25;
-  const POINTS_PER_HIT = 100;
+  const ORDER_POINTS = [200, 150, 100, 50];
+  const ORDER_MEDALS = ["🥇 1ª", "🥈 2ª", "🥉 3ª", "4ª"];
 
   /* ================== SINTETIZADOR WEB AUDIO OFF-LINE ================== */
   const SoundFX = {
@@ -1788,19 +1740,14 @@
     teamNames: [...DEFAULT_NAMES],
     teams: [],
     qIdx: 0,
-    timeLeft: ROUND_SECONDS,
-    lastWholeSec: ROUND_SECONDS,
-    paused: false,
     pickedOption: null,
-    awardedSet: new Set(),
-    timerInterval: null,
+    awardedOrder: [],
     mascotCycleInterval: null,
     podiumCycleInterval: null,
     bossCycleInterval: null,
     bossIntroTimeout: null,
     answerPoseTimeout: null,
-    bossDefeated: false,
-    urgentPoseSet: false
+    bossDefeated: false
   };
 
   /* ================== REFERÊNCIAS DOM ================== */
@@ -1822,12 +1769,7 @@
   const teamInputsWrap = document.getElementById("team-inputs");
   const btnStartGame = document.getElementById("btn-start-game");
 
-  const timerPanel = document.getElementById("timer-panel");
-  const dropletTimer = document.getElementById("droplet-timer");
-  const dropLiquidRect = document.getElementById("drop-liquid-rect");
-  const timerBadge = document.getElementById("timer-badge");
-  const timerFill = document.getElementById("timer-fill");
-  const btnPause = document.getElementById("btn-pause");
+  const actionPanel = document.getElementById("action-panel");
   const btnReveal = document.getElementById("btn-reveal");
 
   const qTopic = document.getElementById("q-topic");
@@ -1877,7 +1819,6 @@
   }
 
   function stopIntervals() {
-    if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
     if (state.mascotCycleInterval) { clearInterval(state.mascotCycleInterval); state.mascotCycleInterval = null; }
     if (state.podiumCycleInterval) { clearInterval(state.podiumCycleInterval); state.podiumCycleInterval = null; }
     if (state.bossCycleInterval) { clearInterval(state.bossCycleInterval); state.bossCycleInterval = null; }
@@ -1961,7 +1902,7 @@
     state.teams = [];
     for (let i = 0; i < state.teamCount; i++) {
       const name = (state.teamNames[i] || "").trim() || DEFAULT_NAMES[i];
-      state.teams.push({ name, score: 0, color: TEAM_COLORS[i] });
+      state.teams.push({ name, score: 0, roundAward: 0, color: TEAM_COLORS[i] });
     }
     state.qIdx = 0;
     loadQuestion();
@@ -1979,39 +1920,14 @@
     });
   }
 
-  function updateTimerVisuals() {
-    const whole = Math.ceil(state.timeLeft);
-    const ratio = Math.max(0, Math.min(1, state.timeLeft / ROUND_SECONDS));
-    const pct = ratio * 100;
-    let color = "#22c55e";
-    if (state.timeLeft <= 5) {
-      color = "#ef4444";
-    } else if (state.timeLeft <= 12) {
-      color = "#f59e0b";
-    }
-
-    timerFill.style.width = pct + "%";
-    timerFill.style.background = color;
-
-    // Esvazia a gotinha d'água de cima para baixo (y de 4 a 72)
-    const dropY = 72 - ratio * 68;
-    dropLiquidRect.setAttribute("y", dropY.toFixed(1));
-    dropLiquidRect.setAttribute("fill", color);
-
-    timerBadge.textContent = state.paused ? "PAUSA" : `${whole}s`;
-    dropletTimer.classList.toggle("urgent", !state.paused && state.timeLeft > 0 && state.timeLeft <= 5);
-  }
-
   function loadQuestion() {
     stopIntervals();
     clearCelebration();
     const q = DATA.questions[state.qIdx];
     const isBoss = Boolean(q.is_boss);
-    state.timeLeft = ROUND_SECONDS;
-    state.lastWholeSec = ROUND_SECONDS;
-    state.paused = false;
     state.pickedOption = null;
-    state.awardedSet = new Set();
+    state.awardedOrder = [];
+    state.teams.forEach((t) => { t.roundAward = 0; });
     state.bossDefeated = false;
 
     topBrandText.style.display = "none";
@@ -2019,9 +1935,8 @@
     qCounterBadge.textContent = `${state.qIdx + 1} / ${DATA.questions.length}`;
     refreshHudScores();
 
-    timerPanel.style.display = "flex";
+    actionPanel.style.display = "flex";
     feedbackPanel.classList.remove("visible");
-    btnPause.textContent = "⏸ Pausar";
 
     qTopic.textContent = q.topic;
     qText.textContent = q.question;
@@ -2041,7 +1956,7 @@
       let bIdx = 0;
       setMascot(bossImg, bossPoses[0], "boss-float");
       state.bossCycleInterval = setInterval(() => {
-        if (state.phase !== "question" || state.paused) return;
+        if (state.phase !== "question") return;
         bIdx = (bIdx + 1) % bossPoses.length;
         setMascot(bossImg, bossPoses[bIdx], "boss-float");
       }, 2500);
@@ -2054,11 +1969,10 @@
       ? ["angry", "idle"]
       : (q.is_pollution ? ["angry", "sad", "thinking", "angry"] : ["idle", "thinking", "waving"]);
     let qPoseIdx = 0;
-    state.urgentPoseSet = false;
     setMascot(quizMascotImg, qPoses[0], q.is_pollution ? "anim-angry-burst" : "anim-breathe");
 
     state.mascotCycleInterval = setInterval(() => {
-      if (state.phase !== "question" || state.paused || state.urgentPoseSet) return;
+      if (state.phase !== "question") return;
       qPoseIdx = (qPoseIdx + 1) % qPoses.length;
       setMascot(quizMascotImg, qPoses[qPoseIdx], "anim-breathe");
     }, 3400);
@@ -2071,26 +1985,6 @@
     });
 
     showScreen("quiz", "question");
-    updateTimerVisuals();
-
-    state.timerInterval = setInterval(() => {
-      if (state.phase !== "question" || state.paused) return;
-      state.timeLeft = Math.max(0, state.timeLeft - 0.1);
-      const whole = Math.ceil(state.timeLeft);
-      if (whole !== state.lastWholeSec) {
-        state.lastWholeSec = whole;
-        if (whole >= 1 && whole <= 5) SoundFX.tick();
-        // Nos últimos 6s, sapinho fica preocupado (pose sad) se ainda não estava
-        if (whole === 6 && !state.urgentPoseSet) {
-          state.urgentPoseSet = true;
-          setMascot(quizMascotImg, "sad", "anim-breathe");
-        }
-      }
-      updateTimerVisuals();
-      if (state.timeLeft <= 0) {
-        revealAnswer(true);
-      }
-    }, 100);
   }
 
   function triggerBossDefeat() {
@@ -2106,18 +2000,87 @@
     SoundFX.bossDefeat();
   }
 
-  function revealAnswer(isTimeout = false) {
+  function renderAwardButtons(isBoss) {
+    const teamBtns = [];
+    awardTeamsContainer.innerHTML = '<span class="award-label">Ordem de resposta:</span>';
+
+    function updateAllAwardButtons() {
+      // Recalcula pontos da rodada com base na ordem (200, 150, 100, 50)
+      state.teams.forEach((t) => {
+        t.score = Math.max(0, t.score - (t.roundAward || 0));
+        t.roundAward = 0;
+      });
+      state.awardedOrder.forEach((tIdx, pos) => {
+        const pts = ORDER_POINTS[pos] ?? 50;
+        state.teams[tIdx].roundAward = pts;
+        state.teams[tIdx].score += pts;
+      });
+
+      const nextPts = ORDER_POINTS[state.awardedOrder.length] ?? 50;
+      teamBtns.forEach((btn, idx) => {
+        const orderPos = state.awardedOrder.indexOf(idx);
+        const team = state.teams[idx];
+        if (orderPos !== -1) {
+          const pts = ORDER_POINTS[orderPos] ?? 50;
+          const medal = ORDER_MEDALS[orderPos] || `${orderPos + 1}ª`;
+          btn.classList.add("awarded");
+          btn.style.background = team.color;
+          btn.textContent = `${medal} (+${pts}) ${team.name}`;
+        } else {
+          btn.classList.remove("awarded");
+          btn.style.background = "#e0f2fe";
+          btn.textContent = `+${nextPts} ${team.name}`;
+        }
+      });
+      refreshHudScores();
+    }
+
+    state.teams.forEach((_team, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "team-award-btn";
+      btn.addEventListener("click", () => {
+        const pos = state.awardedOrder.indexOf(idx);
+        if (pos !== -1) {
+          state.awardedOrder.splice(pos, 1);
+          SoundFX.click();
+        } else {
+          state.awardedOrder.push(idx);
+          SoundFX.coin();
+          if (isBoss) triggerBossDefeat();
+        }
+        updateAllAwardButtons();
+      });
+      teamBtns.push(btn);
+      awardTeamsContainer.appendChild(btn);
+    });
+
+    const resetBtn = document.createElement("button");
+    resetBtn.type = "button";
+    resetBtn.className = "reset-round-btn";
+    resetBtn.textContent = "⟲ Zerar";
+    resetBtn.title = "Limpar pontuação desta rodada";
+    resetBtn.addEventListener("click", () => {
+      state.awardedOrder = [];
+      SoundFX.click();
+      updateAllAwardButtons();
+    });
+    awardTeamsContainer.appendChild(resetBtn);
+
+    updateAllAwardButtons();
+  }
+
+  function revealAnswer() {
     if (state.phase !== "question") return;
     stopIntervals();
     state.phase = "answer";
 
     const q = DATA.questions[state.qIdx];
     const isBoss = Boolean(q.is_boss);
-    const roundPoints = q.points || POINTS_PER_HIT;
     const correctIdx = q.correct;
-    const isWrongPick = !isTimeout && state.pickedOption !== null && state.pickedOption !== correctIdx;
+    const isWrongPick = state.pickedOption !== null && state.pickedOption !== correctIdx;
 
-    if (isTimeout || isWrongPick) {
+    if (isWrongPick) {
       SoundFX.wrong();
     } else if (!isBoss) {
       SoundFX.correct();
@@ -2138,57 +2101,29 @@
     });
 
     if (isBoss) {
-      if (!isTimeout && !isWrongPick) {
+      if (!isWrongPick) {
         triggerBossDefeat();
       } else {
         setMascot(quizMascotImg, "sad", "anim-sad");
-        quizMascotTip.textContent = "Alguma equipe acertou?";
+        quizMascotTip.textContent = "Marque quem acertou!";
         setMascot(bossImg, "boss_laugh", "boss-float");
       }
-    } else if (isTimeout || isWrongPick) {
+    } else if (isWrongPick) {
       setMascot(quizMascotImg, "sad", "anim-sad");
-      quizMascotTip.textContent = isTimeout ? "Tempo esgotado!" : "Quase! Veja a dica!";
+      quizMascotTip.textContent = "Quase! Veja a dica!";
     } else {
       setMascot(quizMascotImg, "victory", "anim-victory-burst");
-      quizMascotTip.textContent = "Boa! +100 pontos!";
+      quizMascotTip.textContent = "Marque a ordem dos acertos!";
       spawnCelebration(50, false);
       state.answerPoseTimeout = setTimeout(() => {
         if (state.phase === "answer") setMascot(quizMascotImg, "waving", "anim-breathe");
       }, 2200);
     }
 
-    timerPanel.style.display = "none";
-    const prefix = isTimeout ? "⏰ Tempo encerrado! " : "💡 Explicação do S.A.P.A.: ";
-    feedbackExplanation.textContent = prefix + q.explanation;
+    actionPanel.style.display = "none";
+    feedbackExplanation.textContent = "💡 Explicação do S.A.P.A.: " + q.explanation;
 
-    const ptsLabel = isBoss ? `(+${roundPoints} pts — 2x!)` : `(+${roundPoints} pts)`;
-    awardTeamsContainer.innerHTML = `<span class="award-label">Quem acertou? ${ptsLabel}:</span>`;
-    state.teams.forEach((team, idx) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "team-award-btn";
-      btn.textContent = `+${roundPoints} ${team.name}`;
-      btn.addEventListener("click", () => {
-        if (state.awardedSet.has(idx)) {
-          state.awardedSet.delete(idx);
-          team.score = Math.max(0, team.score - roundPoints);
-          btn.classList.remove("awarded");
-          btn.style.background = "#e0f2fe";
-          btn.textContent = `+${roundPoints} ${team.name}`;
-          SoundFX.click();
-        } else {
-          state.awardedSet.add(idx);
-          team.score += roundPoints;
-          btn.classList.add("awarded");
-          btn.style.background = team.color;
-          btn.textContent = `✓ +${roundPoints} ${team.name}`;
-          SoundFX.coin();
-          if (isBoss) triggerBossDefeat();
-        }
-        refreshHudScores();
-      });
-      awardTeamsContainer.appendChild(btn);
-    });
+    renderAwardButtons(isBoss);
 
     const isLast = state.qIdx === DATA.questions.length - 1;
     btnNext.textContent = isLast ? "🏆 Ver Pódio Final!" : "Próxima Pergunta ➡";
@@ -2199,26 +2134,12 @@
     btn.addEventListener("click", () => {
       if (state.phase !== "question") return;
       state.pickedOption = Number(btn.dataset.idx);
-      revealAnswer(false);
+      revealAnswer();
     });
   });
 
-  btnPause.addEventListener("click", () => {
-    if (state.phase !== "question") return;
-    SoundFX.click();
-    state.paused = !state.paused;
-    btnPause.textContent = state.paused ? "▶ Continuar" : "⏸ Pausar";
-    if (state.paused) {
-      setMascot(quizMascotImg, "thinking", "anim-breathe");
-    } else {
-      const q = DATA.questions[state.qIdx];
-      setMascot(quizMascotImg, q.is_pollution ? "angry" : "idle", "anim-breathe");
-    }
-    updateTimerVisuals();
-  });
-
   btnReveal.addEventListener("click", () => {
-    if (state.phase === "question") revealAnswer(false);
+    if (state.phase === "question") revealAnswer();
   });
 
   function enterBossBattle() {
@@ -2371,10 +2292,7 @@
       const map = { "1": 0, "a": 0, "2": 1, "b": 1, "3": 2, "c": 2, "4": 3, "d": 3 };
       if (k in map) {
         state.pickedOption = map[k];
-        revealAnswer(false);
-      } else if (e.code === "Space") {
-        e.preventDefault();
-        btnPause.click();
+        revealAnswer();
       }
     } else if (state.phase === "answer" && e.key === "Enter") {
       btnNext.click();

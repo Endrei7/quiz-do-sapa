@@ -128,7 +128,7 @@ QUESTIONS = [
         "mascot_tip": "O S.A.P.A. vai para todo lugar!",
     },
     {
-        "topic": "⚡ CHEFE FINAL • 200 PONTOS (2x)",
+        "topic": "⚡ CHEFE FINAL • CAPITÃO GARRAFÃO",
         "question": "Bwahahaha! Eu e meu exército de plástico vamos entupir os bueiros e agitar o rio! O que o S.A.P.A. e vocês fazem juntos para me derrotar e evitar a enchente?",
         "options": [
             "Deixar as garrafas na calçada esperando a água da chuva sumir sozinha",
@@ -140,7 +140,6 @@ QUESTIONS = [
         "explanation": "Vitória dos Guardiões! O S.A.P.A. usa câmera + IA para confirmar o lixo e vigiar a correnteza, toca o alarme na hora certa — e vocês ajudam jogando cada garrafa na lixeira!",
         "is_pollution": True,
         "is_boss": True,
-        "points": 200,
-        "mascot_tip": "Foco total, turma! Vale o DOBRO!",
+        "mascot_tip": "Foco total, turma! Vamos derrotá-lo!",
     },
 ]
