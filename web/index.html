@@ -2994,10 +2994,15 @@
   });
 
   btnExit.addEventListener("click", () => {
-    if (window.pywebview && window.pywebview.api) {
+    SoundFX.click();
+    if (window.pywebview && window.pywebview.api && typeof window.pywebview.api.close_app === "function") {
       window.pywebview.api.close_app();
     } else {
-      window.close();
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+      openStartScreen();
+      try { window.close(); } catch (_) {}
     }
   });
 
@@ -3010,7 +3015,7 @@
 
   function toggleFullscreen() {
     SoundFX.click();
-    if (window.pywebview && window.pywebview.api) {
+    if (window.pywebview && window.pywebview.api && typeof window.pywebview.api.toggle_fullscreen === "function") {
       window.pywebview.api.toggle_fullscreen();
     } else if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});

@@ -43,6 +43,7 @@ quiz_sapa/
 ├── main.py                  # Launcher desktop PyWebView (resolução sys._MEIPASS para .exe)
 ├── questions.py             # Banco das 10 perguntas educativas (inclui Fase Boss na Q10)
 ├── build_data_js.py         # Gera web/sapa_data.js embutindo sprites, avatares, logo e perguntas
+├── build_portable.py        # Gera cópia portátil universal (HTML único + ZIPs) em dist_colegas/
 ├── slice_sprites.py         # Fatiamento 3×2 de spritesheet.jpeg (poses do Sapinho Explorador)
 ├── slice_boss_sprites.py    # Fatiamento 2×2 de boss_spritesheet.jpg (poses do Capitão Garrafão)
 ├── slice_team_sprites.py    # Fatiamento 5×2 de equipes_spritesheet.jpg (10 avatares das equipes)
@@ -97,10 +98,22 @@ python test_webview_flow.py
 
 ---
 
-## 📦 Gerar Executável Windows (`.exe`)
+## 📦 Gerar Executável Windows (`.exe`) e Cópia Portátil (`dist_colegas/`)
 
 Para empacotar o jogo em um executável único em `dist/Quiz_do_SAPA.exe`:
 
 ```bash
 pyinstaller --noconfirm --onefile --windowed --name "Quiz_do_SAPA" --add-data "web;web" main.py
 ```
+
+Para gerar o pacote portátil pronto para enviar aos colegas (`dist_colegas/`):
+
+```bash
+python build_portable.py
+```
+
+Arquivos gerados em `dist_colegas/`:
+- `Quiz_do_SAPA_Universal.html`: arquivo único 100% off-line para abrir com dois cliques em qualquer notebook (Windows, MacBook, Linux ou Chromebook).
+- `Quiz_do_SAPA_Qualquer_Notebook.zip`: pacote leve (`HTML + LEIA-ME.txt`) sem `.exe`, ideal para enviar por WhatsApp ou e-mail sem bloqueios.
+- `Quiz_do_SAPA_Windows.exe`: cópia do executável nativo para Windows 10/11.
+- `Quiz_do_SAPA_Completo_Com_EXE.zip`: pacote completo (`HTML + EXE + LEIA-ME.txt`) para pendrive ou Google Drive.
