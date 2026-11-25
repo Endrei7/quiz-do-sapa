@@ -378,38 +378,39 @@
     filter: drop-shadow(0 8px 10px rgba(2, 48, 71, 0.28));
   }
 
-  .anim-breathe { animation: frogBreathe 2.8s ease-in-out infinite; }
-  .anim-hop { animation: frogHop 1.65s ease-in-out infinite; }
-  .anim-victory { animation: frogVictoryJump 0.85s ease-in-out infinite; }
-  .anim-sad { animation: frogSadShake 0.55s ease-in-out 2; }
-  .anim-angry { animation: frogAngryBob 1.3s ease-in-out infinite; }
+  .anim-breathe { animation: frogBreathe 3.2s ease-in-out infinite; }
+  .anim-hop-once { animation: frogHop 0.9s ease-in-out 2, frogBreathe 3.2s ease-in-out 1.8s infinite; }
+  .anim-victory-burst { animation: frogVictoryJump 0.78s ease-in-out 2, frogBreathe 3.2s ease-in-out 1.6s infinite; }
+  .anim-sad { animation: frogSadShake 0.55s ease-in-out 2, frogBreathe 3.4s ease-in-out 1.2s infinite; }
+  .anim-angry-burst { animation: frogAngryBob 0.55s ease-in-out 2, frogBreathe 3.2s ease-in-out 1.1s infinite; }
 
   @keyframes frogBreathe {
     0%, 100% { transform: scaleY(1) scaleX(1) rotate(0deg); }
-    50% { transform: scaleY(1.04) scaleX(0.98) rotate(1deg); }
+    50% { transform: scaleY(1.028) scaleX(0.985) rotate(0.6deg); }
   }
   @keyframes frogHop {
     0%, 100% { transform: translateY(0px) scaleY(1); }
-    20% { transform: translateY(4px) scaleY(0.94) scaleX(1.04); }
-    50% { transform: translateY(-16px) scaleY(1.05) rotate(-2deg); }
-    80% { transform: translateY(2px) scaleY(0.96); }
+    20% { transform: translateY(3px) scaleY(0.95) scaleX(1.03); }
+    50% { transform: translateY(-14px) scaleY(1.04) rotate(-2deg); }
+    80% { transform: translateY(2px) scaleY(0.97); }
   }
   @keyframes frogVictoryJump {
     0%, 100% { transform: translateY(0px) scale(1); }
-    25% { transform: translateY(5px) scaleY(0.92) scaleX(1.06); }
-    55% { transform: translateY(-26px) scale(1.07) rotate(-3deg); }
-    80% { transform: translateY(-4px) rotate(2deg); }
+    25% { transform: translateY(4px) scaleY(0.93) scaleX(1.05); }
+    55% { transform: translateY(-22px) scale(1.06) rotate(-2.5deg); }
+    80% { transform: translateY(-3px) rotate(2deg); }
   }
   @keyframes frogSadShake {
     0%, 100% { transform: translateX(0px) rotate(0deg); }
-    20% { transform: translateX(-11px) rotate(-4deg); }
-    40% { transform: translateX(11px) rotate(4deg); }
-    60% { transform: translateX(-8px) rotate(-2deg); }
-    80% { transform: translateX(8px) rotate(2deg); }
+    20% { transform: translateX(-10px) rotate(-3.5deg); }
+    40% { transform: translateX(10px) rotate(3.5deg); }
+    60% { transform: translateX(-7px) rotate(-2deg); }
+    80% { transform: translateX(7px) rotate(2deg); }
   }
   @keyframes frogAngryBob {
-    0%, 100% { transform: scale(1) rotate(-1deg); }
-    50% { transform: scale(1.04) rotate(1.5deg); }
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    30% { transform: scale(1.05) rotate(-3deg); }
+    70% { transform: scale(1.05) rotate(3deg); }
   }
   @keyframes popInElastic {
     0% { opacity: 0; transform: scale(0.76) translateY(20px); }
@@ -1191,7 +1192,7 @@
           <!-- Sapinho solto diretamente na vitória-régia -->
           <div class="lily-spot">
             <div class="start-mascot-wrap">
-              <img id="start-mascot-img" class="mascot-img anim-hop" alt="Mascote S.A.P.A. acenando">
+              <img id="start-mascot-img" class="mascot-img anim-hop-once" alt="Mascote S.A.P.A. acenando">
             </div>
             <div class="frog-shadow"></div>
             <svg class="lily-pad-svg" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
@@ -1337,7 +1338,7 @@
         <div class="podium-stage">
           <div class="lily-spot">
             <div class="podium-mascot">
-              <img id="podium-mascot-left" class="mascot-img anim-victory" alt="Mascote comemorando">
+              <img id="podium-mascot-left" class="mascot-img anim-victory-burst" alt="Mascote comemorando">
             </div>
             <div class="frog-shadow"></div>
             <svg class="lily-pad-svg" style="max-width:195px; margin-top:-18px;" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
@@ -1351,7 +1352,7 @@
 
           <div class="lily-spot">
             <div class="podium-mascot">
-              <img id="podium-mascot-right" class="mascot-img anim-hop" alt="Mascote acenando">
+              <img id="podium-mascot-right" class="mascot-img anim-breathe" alt="Mascote acenando">
             </div>
             <div class="frog-shadow"></div>
             <svg class="lily-pad-svg" style="max-width:195px; margin-top:-18px;" viewBox="0 0 260 66" xmlns="http://www.w3.org/2000/svg">
@@ -1600,8 +1601,9 @@
   if (DATA.logo) brandLogo.src = DATA.logo;
   else brandLogo.style.display = "none";
 
-  function setMascot(imgEl, pose, animClass) {
+  function setMascot(imgEl, pose, animClass = "anim-breathe") {
     if (DATA.sprites[pose]) imgEl.src = DATA.sprites[pose];
+    // Reinicia animacao one-shot apenas quando a classe muda ou e explosao intencional
     imgEl.className = "mascot-img " + animClass;
   }
 
@@ -1614,6 +1616,8 @@
   function stopIntervals() {
     if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
     if (state.mascotCycleInterval) { clearInterval(state.mascotCycleInterval); state.mascotCycleInterval = null; }
+    if (state.podiumCycleInterval) { clearInterval(state.podiumCycleInterval); state.podiumCycleInterval = null; }
+    if (state.answerPoseTimeout) { clearTimeout(state.answerPoseTimeout); state.answerPoseTimeout = null; }
   }
 
   /* ================== TELA INICIAL ================== */
@@ -1653,6 +1657,9 @@
       teamCountPills.querySelectorAll(".count-pill").forEach((p) => p.classList.remove("selected"));
       pill.classList.add("selected");
       renderTeamInputs();
+      // Sapinho reage escolhendo poses variadas sem pular sem parar
+      const reactPose = state.teamCount === 4 ? "victory" : (state.teamCount === 3 ? "waving" : "idle");
+      setMascot(startMascotImg, reactPose, "anim-hop-once");
     });
   });
 
@@ -1662,7 +1669,14 @@
     qCounterBadge.style.display = "none";
     topBrandText.style.display = "inline";
     hudScores.innerHTML = "";
-    setMascot(startMascotImg, "waving", "anim-hop");
+    const startPoses = ["waving", "idle", "thinking", "victory"];
+    let startStep = 0;
+    setMascot(startMascotImg, startPoses[0], "anim-hop-once");
+    state.mascotCycleInterval = setInterval(() => {
+      if (state.phase !== "start") return;
+      startStep = (startStep + 1) % startPoses.length;
+      setMascot(startMascotImg, startPoses[startStep], "anim-breathe");
+    }, 3400);
     renderTeamInputs();
     showScreen("start");
   }
@@ -1736,17 +1750,17 @@
     qText.textContent = q.question;
     quizMascotTip.textContent = q.mascot_tip;
 
-    if (q.is_pollution) {
-      setMascot(quizMascotImg, "angry", "anim-angry");
-    } else {
-      state.mascotFlip = false;
-      setMascot(quizMascotImg, "idle", "anim-breathe");
-      state.mascotCycleInterval = setInterval(() => {
-        if (state.phase !== "question") return;
-        state.mascotFlip = !state.mascotFlip;
-        setMascot(quizMascotImg, state.mascotFlip ? "thinking" : "idle", "anim-breathe");
-      }, 3200);
-    }
+    // Sequência expressiva de poses usando todas as expressões da sprite sheet, sem animação repetitiva
+    const qPoses = q.is_pollution ? ["angry", "sad", "thinking", "angry"] : ["idle", "thinking", "waving"];
+    let qPoseIdx = 0;
+    state.urgentPoseSet = false;
+    setMascot(quizMascotImg, qPoses[0], q.is_pollution ? "anim-angry-burst" : "anim-breathe");
+
+    state.mascotCycleInterval = setInterval(() => {
+      if (state.phase !== "question" || state.paused || state.urgentPoseSet) return;
+      qPoseIdx = (qPoseIdx + 1) % qPoses.length;
+      setMascot(quizMascotImg, qPoses[qPoseIdx], "anim-breathe");
+    }, 3400);
 
     optionButtons.forEach((btn, idx) => {
       btn.className = "kahoot-btn enabled pop-in";
@@ -1765,6 +1779,11 @@
       if (whole !== state.lastWholeSec) {
         state.lastWholeSec = whole;
         if (whole >= 1 && whole <= 5) SoundFX.tick();
+        // Nos últimos 6s, sapinho fica preocupado (pose sad) se ainda não estava
+        if (whole === 6 && !state.urgentPoseSet) {
+          state.urgentPoseSet = true;
+          setMascot(quizMascotImg, "sad", "anim-breathe");
+        }
       }
       updateTimerVisuals();
       if (state.timeLeft <= 0) {
@@ -1806,9 +1825,12 @@
       setMascot(quizMascotImg, "sad", "anim-sad");
       quizMascotTip.textContent = isTimeout ? "Tempo esgotado!" : "Quase! Veja a dica!";
     } else {
-      setMascot(quizMascotImg, "victory", "anim-victory");
+      setMascot(quizMascotImg, "victory", "anim-victory-burst");
       quizMascotTip.textContent = "Boa! +100 pontos!";
       spawnCelebration(50, false);
+      state.answerPoseTimeout = setTimeout(() => {
+        if (state.phase === "answer") setMascot(quizMascotImg, "waving", "anim-breathe");
+      }, 2200);
     }
 
     timerPanel.style.display = "none";
@@ -1860,6 +1882,12 @@
     SoundFX.click();
     state.paused = !state.paused;
     btnPause.textContent = state.paused ? "▶ Continuar" : "⏸ Pausar";
+    if (state.paused) {
+      setMascot(quizMascotImg, "thinking", "anim-breathe");
+    } else {
+      const q = DATA.questions[state.qIdx];
+      setMascot(quizMascotImg, q.is_pollution ? "angry" : "idle", "anim-breathe");
+    }
     updateTimerVisuals();
   });
 
@@ -1886,8 +1914,17 @@
     topBrandText.style.display = "inline";
     hudScores.innerHTML = "";
 
-    setMascot(podiumMascotLeft, "victory", "anim-victory");
-    setMascot(podiumMascotRight, "waving", "anim-hop");
+    const leftPoses = ["victory", "waving", "idle"];
+    const rightPoses = ["waving", "victory", "thinking"];
+    let podStep = 0;
+    setMascot(podiumMascotLeft, leftPoses[0], "anim-victory-burst");
+    setMascot(podiumMascotRight, rightPoses[0], "anim-hop-once");
+    state.podiumCycleInterval = setInterval(() => {
+      if (state.phase !== "podium") return;
+      podStep = (podStep + 1) % leftPoses.length;
+      setMascot(podiumMascotLeft, leftPoses[podStep], "anim-breathe");
+      setMascot(podiumMascotRight, rightPoses[podStep], "anim-breathe");
+    }, 3200);
     spawnCelebration(72, true);
 
     const ranked = [...state.teams].sort((a, b) => b.score - a.score);

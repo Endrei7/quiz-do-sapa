@@ -36,7 +36,7 @@ def main():
                   const m = document.getElementById('quiz-mascot-img');
                   return {
                     badge: document.getElementById('q-counter-badge').textContent,
-                    isAngry: m.classList.contains('anim-angry'),
+                    isAngry: m.classList.contains('anim-angry-burst'),
                     naturalWidth: m.naturalWidth,
                     overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
                   };
