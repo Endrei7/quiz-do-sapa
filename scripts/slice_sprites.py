@@ -4,8 +4,8 @@ from collections import deque
 import os
 from PIL import Image, ImageFilter
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_SHEET = os.path.join(BASE_DIR, "spritesheet.jpeg")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SRC_SHEET = os.path.join(BASE_DIR, "assets_src", "spritesheet.jpeg")
 OUT_DIR = os.path.join(BASE_DIR, "web", "assets", "sprites")
 
 GRID_SPECS = [

@@ -3,6 +3,7 @@
 import os
 import re
 import shutil
+import time
 import zipfile
 from build_data_js import build as build_data_bundle
 
@@ -42,14 +43,17 @@ LEIA_ME_CONTENT = """===========================================================
    - Pressione F11 (ou clique em "Tela Cheia") para projetar em tela cheia.
    - Escolha de 2 a 10 equipes e selecione os 10 mascotes da Amazonia
      usando as setinhas (< >) ou clicando no avatar.
-   - A pontuacao se ajusta automaticamente ao numero de equipes
-     (descendo de 50 em 50 pontos) e vale o DOBRO (2x) na Questao 10 (Boss).
+   - Fase 1 (10 perguntas) com pontuacao automatica ajustada ao numero de equipes
+     (descendo de 50 em 50 pontos) + Emboscada surpresa do Capitao Garrafao no
+     Podio + Cutscenes HQ + Fase 2 (Boss Fight de 7 desafios valendo o DOBRO
+     e devolucao em 2x dos pontos da Fase 1 ao derrotar o vilao!).
 
-4) ATALHOS DO TECLADO
-   - 1 a 4 ou A a D : Seleciona a alternativa durante a pergunta
-   - Enter            : Inicia a batalha do Boss ou avanca apos revelar resposta
-   - Esc              : Fecha a janelinha de escolha de mascote
-   - F11              : Entra ou sai do modo Tela Cheia
+4) ATALHOS DO TECLADO (E APONTADORES DE SLIDES)
+   - 1 a 4 ou A a D        : Seleciona a alternativa durante a pergunta
+   - Espaco / Enter / ->   : Avanca a emboscada e os dialogos das cutscenes HQ
+   - Enter / -> / PageDown : Avanca para a proxima pergunta apos revelar resposta
+   - Esc                   : Fecha a janelinha de escolha de mascote
+   - F11                   : Entra ou sai do modo Tela Cheia
 ====================================================================
 """
 
@@ -94,10 +98,20 @@ def build_portable() -> None:
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(LEIA_ME_CONTENT)
 
+    exe_for_zip = exe_dst
     if os.path.exists(EXE_SRC) and (
         not os.path.exists(exe_dst) or os.path.getmtime(EXE_SRC) > os.path.getmtime(exe_dst)
     ):
-        shutil.copy2(EXE_SRC, exe_dst)
+        copied = False
+        for _ in range(8):
+            try:
+                shutil.copy2(EXE_SRC, exe_dst)
+                copied = True
+                break
+            except PermissionError:
+                time.sleep(0.5)
+        if not copied:
+            exe_for_zip = EXE_SRC
     elif os.path.exists(exe_dst):
         try:
             shutil.copy2(exe_dst, EXE_SRC)
@@ -114,7 +128,7 @@ def build_portable() -> None:
 
     with zipfile.ZipFile(zip_exe_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         zf.write(universal_path, arcname=UNIVERSAL_HTML_NAME)
-        zf.write(exe_dst, arcname=WINDOWS_EXE_NAME)
+        zf.write(exe_for_zip, arcname=WINDOWS_EXE_NAME)
         zf.write(readme_path, arcname=README_TXT_NAME)
 
     for path in (universal_path, readme_path, exe_dst, zip_any_path, zip_exe_path):

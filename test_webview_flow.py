@@ -191,16 +191,21 @@ def main():
               heistBanner: document.getElementById('podium-heist-banner').classList.contains('active')
             }))()
         """)
+        time.sleep(3.15)
+        # Espera 2.6s extras para provar que NAO pula automaticamente (exige acao manual)
         time.sleep(2.6)
         results["heist"] = win.evaluate_js("""
             (() => ({
               heistBanner: document.getElementById('podium-heist-banner').classList.contains('active'),
+              cutsceneStillClosed: !document.getElementById('cutscene-overlay').classList.contains('active'),
+              hasContinueBtn: Boolean(document.getElementById('btn-heist-continue')),
               bossMode: document.body.classList.contains('boss-mode'),
               lockedHudCount: document.querySelectorAll('#hud-scores .score-pill.locked-pill').length,
               stolenTexts: Array.from(document.querySelectorAll('.podium-team-pts.stolen')).map(e => e.textContent)
             }))()
         """)
-        time.sleep(2.4)
+        win.evaluate_js("document.getElementById('btn-heist-continue').click();")
+        time.sleep(0.25)
 
         pre_steps = []
         for _ in range(4):
@@ -294,6 +299,7 @@ def main():
                 active: document.getElementById('screen-podium').classList.contains('active'),
                 bossMode: document.body.classList.contains('boss-mode'),
                 podiumPts: Array.from(document.querySelectorAll('.podium-team-pts')).map(el => el.textContent),
+                podiumBarDetails: Array.from(document.querySelectorAll('.podium-bar-detail')).map(el => el.textContent),
                 podiumAvatarCount: document.querySelectorAll('.podium-team-avatar').length,
                 rank1AvatarHeight: r1Wrap ? Math.round(r1Wrap.offsetHeight) : 0,
                 rank2AvatarHeight: r2Wrap ? Math.round(r2Wrap.offsetHeight) : 0,
@@ -349,7 +355,8 @@ def main():
     assert not any(q["overflowY"] or q["overflowAfterReveal"] for q in results["questions"])
 
     assert results["fake_podium"]["podiumActive"] and not results["fake_podium"]["bossMode"]
-    assert results["heist"]["heistBanner"] and results["heist"]["bossMode"] and results["heist"]["lockedHudCount"] == 10
+    assert results["heist"]["heistBanner"] and results["heist"]["cutsceneStillClosed"] and results["heist"]["hasContinueBtn"]
+    assert results["heist"]["bossMode"] and results["heist"]["lockedHudCount"] == 10
     assert len(results["pre_cutscene"]) == 4 and all(s["overlay"] and s["brokenImgs"] == 0 and not s["overflowY"] for s in results["pre_cutscene"])
 
     assert len(results["boss_questions"]) == 7
@@ -366,6 +373,7 @@ def main():
 
     assert results["podium"]["active"] and not results["podium"]["bossMode"]
     assert results["podium"]["podiumPts"] == ["15300 pts", "17000 pts", "13600 pts"]
+    assert "2x F1: 10000 + Boss: 7000" in results["podium"]["podiumBarDetails"]
     assert results["podium"]["podiumAvatarCount"] == 3
     assert results["podium"]["rank1AvatarHeight"] >= 100
     assert results["podium"]["rank2AvatarHeight"] >= 90

@@ -4,8 +4,8 @@ from collections import deque
 import os
 from PIL import Image
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_IMAGE = os.path.join(BASE_DIR, "equipes_spritesheet.jpg")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SRC_IMAGE = os.path.join(BASE_DIR, "assets_src", "equipes_spritesheet.jpg")
 OUT_DIR = os.path.join(BASE_DIR, "web", "assets", "avatars")
 
 AVATAR_GRID_NAMES = [
