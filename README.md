@@ -13,13 +13,14 @@ Funciona **100% off-line** (sem dependência de internet, CDNs ou fontes externa
   - Seleção visual de **10 mascotes** (`Boto-Cor-de-Rosa`, `Ariranha`, `Peixe-Boi`, `Tartaruga`, `Onça-Pintada`, `Preguiça`, `Tucano`, `Arara-Azul`, `Pirarucu` e `Sapo-Boi`) com medalhão colorido, setas `<` `>` e mini-grade modal **5×2**.
   - Bloqueio automático de avatares repetidos (quando há menos de 10 equipes ativas) e troca direta entre equipes quando todas as 10 vagas estão ativas.
   - Sugestão automática do nome da equipe ao trocar o mascote, mantendo nomes personalizados digitados manualmente.
-- **Pontuação Dinâmica por Quantidade de Equipes e Ordem de Resposta (Sem Cronômetro):**
-  - **Questões 1 a 9 (`N × 50` descendo de `50` em `50` pts até `50 pts`):**
+- **Pontuação Dinâmica por Quantidade de Equipes e Estrutura em 2 Fases (Sem Cronômetro):**
+  - **Fase 1 — Questões 1 a 10 (`N × 50` descendo de `50` em `50` pts até `50 pts`):**
     - `4 equipes`: `200, 150, 100, 50 pts`
     - `8 equipes`: `400, 350, 300, 250, 200, 150, 100, 50 pts`
     - `9 equipes`: `450, 400, 350, 300, 250, 200, 150, 100, 50 pts`
     - `10 equipes`: `500, 450, 400, 350, 300, 250, 200, 150, 100, 50 pts`
-  - **Questão 10 — Fase Boss (2× Pontos!):** Enfrente o **Capitão Garrafão** (HP proporcional ao topo da rodada: `400 HP` com 4 equipes até `1000 HP` com 10 equipes) com transição estilo história em quadrinhos, tema tempestade e pontuação dobrada (`1ª` de `+200` com 2 equipes até `+1000` com 10 equipes).
+  - **Emboscada no Pódio & Cutscenes HQ:** Ao concluir a Q10, o **Capitão Garrafão** invade o pódio com tremor de tela, raio, trovão, rio escurecido com lixo flutuante, rouba temporariamente os pontos no cadeado roxo (`🔒`) e inicia uma sequência de diálogos estilo história em quadrinhos com **Lúcio, o Sapo Explorador**.
+  - **Fase 2 — Boss Fight (7 Perguntas Mais Difíceis + Pontos em Dobro):** Barra de HP com **7 segmentos**, ataque visual de água limpa de Lúcio a cada rodada vencida e pontuação `2×` (de `+200` com 2 equipes até `+1000` com 10 equipes). Ao zerar o HP do vilão, o cenário restaura para o azul limpo, os pontos da Fase 1 retornam **em dobro (`2×`)** somados aos da Fase 2, e o Pódio Final verdadeiro celebra os vencedores após a cutscene de reflexão ambiental.
 - **Pódio Final Animado & Chuva de Confetes:** Colunas de 1º, 2º e 3º lugar com medalhões ampliados dos mascotes vencedores em destaque, pílulas com mini-avatares para 4º a 10º lugar e animação de comemoração.
 - **Responsivo para Projetores e TVs (`1280×720` até `1920×1080`):** Layout sem barras de rolagem (`overflow: hidden`) e proteção contra cliques duplos acidentais entre telas.
 
@@ -30,7 +31,8 @@ Funciona **100% off-line** (sem dependência de internet, CDNs ou fontes externa
 | Tecla | Ação |
 | :--- | :--- |
 | `1`–`4` ou `A`–`D` | Seleciona a alternativa correspondente durante a pergunta |
-| `Enter` | Inicia a batalha na introdução do Boss ou avança na tela de resposta |
+| `Espaço` ou `Enter` | Avança os diálogos nas cutscenes HQ |
+| `Enter` | Avança para a próxima pergunta / pódio na tela de resposta |
 | `Esc` | Fecha o modal de seleção de mascote (quando aberto) |
 | `F11` | Alterna o modo Tela Cheia |
 
@@ -41,7 +43,7 @@ Funciona **100% off-line** (sem dependência de internet, CDNs ou fontes externa
 ```text
 quiz_sapa/
 ├── main.py                  # Launcher desktop PyWebView (resolução sys._MEIPASS para .exe)
-├── questions.py             # Banco das 10 perguntas educativas (inclui Fase Boss na Q10)
+├── questions.py             # Banco das 10 perguntas da Fase 1 + 7 perguntas da Boss Fight
 ├── build_data_js.py         # Gera web/sapa_data.js embutindo sprites, avatares, logo e perguntas
 ├── build_portable.py        # Gera cópia portátil universal (HTML único + ZIPs) em dist_colegas/
 ├── slice_sprites.py         # Fatiamento 3×2 de spritesheet.jpeg (poses do Sapinho Explorador)

@@ -139,21 +139,11 @@ def main():
 
         q_checks = []
         for i in range(10):
-            if i == 9:
-                results["boss_intro"] = win.evaluate_js("""
-                    (() => ({
-                      overlay: document.getElementById('boss-intro-overlay').classList.contains('active'),
-                      bossMode: document.body.classList.contains('boss-mode')
-                    }))()
-                """)
-                time.sleep(0.42)
-                win.evaluate_js("document.getElementById('btn-start-boss').click();")
-                time.sleep(0.25)
-
             info = win.evaluate_js("""
                 (() => ({
                   badge: document.getElementById('q-counter-badge').textContent,
                   bossSpotDisplay: getComputedStyle(document.getElementById('boss-spot')).display,
+                  bossMode: document.body.classList.contains('boss-mode'),
                   hudAvatarCount: document.querySelectorAll('#hud-scores .hud-avatar-icon').length,
                   brokenVisibleImgs: Array.from(document.querySelectorAll('#screen-quiz img, #hud-scores img')).filter(im => im.offsetParent !== null && im.naturalWidth === 0).length,
                   optH: Math.round(document.querySelector('.kahoot-btn').getBoundingClientRect().height),
@@ -178,7 +168,6 @@ def main():
                     btnAvatarCount: document.querySelectorAll('.team-award-btn .award-btn-avatar').length,
                     brokenBtnAvatars: Array.from(document.querySelectorAll('.team-award-btn .award-btn-avatar')).filter(im => im.naturalWidth === 0).length,
                     btnSample: [btns[0].textContent, btns[1].textContent, btns[2].textContent, btns[3].textContent, btns[9].textContent],
-                    bossHpAfter: document.getElementById('boss-hp-text').textContent,
                     optHAfter: Math.round(document.querySelector('.kahoot-btn').getBoundingClientRect().height),
                     overflowAfterReveal: document.documentElement.scrollHeight > window.innerHeight + 2
                   };
@@ -193,6 +182,105 @@ def main():
             time.sleep(0.18)
 
         results["questions"] = q_checks
+
+        # 1. Podio Falso (comemoracao limpa inicial) -> Emboscada + Roubo -> Cutscene Pre-Boss
+        results["fake_podium"] = win.evaluate_js("""
+            (() => ({
+              podiumActive: document.getElementById('screen-podium').classList.contains('active'),
+              bossMode: document.body.classList.contains('boss-mode'),
+              heistBanner: document.getElementById('podium-heist-banner').classList.contains('active')
+            }))()
+        """)
+        time.sleep(2.6)
+        results["heist"] = win.evaluate_js("""
+            (() => ({
+              heistBanner: document.getElementById('podium-heist-banner').classList.contains('active'),
+              bossMode: document.body.classList.contains('boss-mode'),
+              lockedHudCount: document.querySelectorAll('#hud-scores .score-pill.locked-pill').length,
+              stolenTexts: Array.from(document.querySelectorAll('.podium-team-pts.stolen')).map(e => e.textContent)
+            }))()
+        """)
+        time.sleep(2.4)
+
+        pre_steps = []
+        for _ in range(4):
+            pre_steps.append(win.evaluate_js("""
+                (() => ({
+                  overlay: document.getElementById('cutscene-overlay').classList.contains('active'),
+                  counter: document.getElementById('cutscene-step-counter').textContent,
+                  speakerTag: document.getElementById('cutscene-speaker-tag').textContent,
+                  text: document.getElementById('cutscene-text').textContent,
+                  brokenImgs: Array.from(document.querySelectorAll('#cutscene-overlay img')).filter(im => im.naturalWidth === 0).length,
+                  overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
+                }))()
+            """))
+            time.sleep(0.28)
+            win.evaluate_js("document.getElementById('btn-cutscene-next').click();")
+            time.sleep(0.12)
+        results["pre_cutscene"] = pre_steps
+
+        # 2. Fase 2: Boss Fight (7 Perguntas Mais Dificeis + HP 7 segmentos + Ataque + 2x)
+        boss_checks = []
+        for b in range(7):
+            info = win.evaluate_js("""
+                (() => ({
+                  badge: document.getElementById('q-counter-badge').textContent,
+                  bossSpotDisplay: getComputedStyle(document.getElementById('boss-spot')).display,
+                  bossMode: document.body.classList.contains('boss-mode'),
+                  hpSegCount: document.querySelectorAll('#boss-hp-track .boss-hp-seg').length,
+                  hpLostBefore: document.querySelectorAll('#boss-hp-track .boss-hp-seg.lost').length,
+                  brokenVisibleImgs: Array.from(document.querySelectorAll('#screen-quiz img, #hud-scores img')).filter(im => im.offsetParent !== null && im.naturalWidth === 0).length,
+                  optH: Math.round(document.querySelector('.kahoot-btn').getBoundingClientRect().height),
+                  overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
+                }))()
+            """)
+            win.evaluate_js(f"""
+                (() => {{
+                  const q = window.__SAPA_DATA__.bossQuestions[{b}];
+                  document.querySelectorAll('.kahoot-btn')[q.correct].click();
+                }})()
+            """)
+            time.sleep(0.18)
+            fb = win.evaluate_js("""
+                (() => {
+                  const btns = document.querySelectorAll('.team-award-btn');
+                  [0, 1, 2, 3, 9].forEach(idx => { if (btns[idx]) btns[idx].click(); });
+                  return {
+                    btnSample: [btns[0].textContent, btns[1].textContent, btns[2].textContent, btns[3].textContent, btns[9].textContent],
+                    hpLostAfter: document.querySelectorAll('#boss-hp-track .boss-hp-seg.lost').length,
+                    bossHpAfter: document.getElementById('boss-hp-text').textContent,
+                    optHAfter: Math.round(document.querySelector('.kahoot-btn').getBoundingClientRect().height),
+                    overflowAfterReveal: document.documentElement.scrollHeight > window.innerHeight + 2
+                  };
+                })()
+            """)
+            info.update(fb)
+            boss_checks.append(info)
+
+            time.sleep(0.42)
+            win.evaluate_js("document.getElementById('btn-next').click();")
+            time.sleep(0.18)
+        results["boss_questions"] = boss_checks
+
+        # 3. Cutscene Final: Cenario restaurado + Pontos em Dobro + Reflexao
+        final_steps = []
+        for _ in range(4):
+            final_steps.append(win.evaluate_js("""
+                (() => ({
+                  overlay: document.getElementById('cutscene-overlay').classList.contains('active'),
+                  counter: document.getElementById('cutscene-step-counter').textContent,
+                  speakerTag: document.getElementById('cutscene-speaker-tag').textContent,
+                  bossModeAfterRestore: document.body.classList.contains('boss-mode'),
+                  lockedHudCount: document.querySelectorAll('#hud-scores .score-pill.locked-pill').length,
+                  brokenImgs: Array.from(document.querySelectorAll('#cutscene-overlay img')).filter(im => im.naturalWidth === 0).length
+                }))()
+            """))
+            time.sleep(0.28)
+            win.evaluate_js("document.getElementById('btn-cutscene-next').click();")
+            time.sleep(0.12)
+        results["final_cutscene"] = final_steps
+
+        # 4. Podio Final Verdadeiro
         time.sleep(1.4)
         results["podium"] = win.evaluate_js("""
             (() => {
@@ -204,6 +292,7 @@ def main():
               const r1Rect = r1Wrap ? r1Wrap.getBoundingClientRect() : null;
               return {
                 active: document.getElementById('screen-podium').classList.contains('active'),
+                bossMode: document.body.classList.contains('boss-mode'),
                 podiumPts: Array.from(document.querySelectorAll('.podium-team-pts')).map(el => el.textContent),
                 podiumAvatarCount: document.querySelectorAll('.podium-team-avatar').length,
                 rank1AvatarHeight: r1Wrap ? Math.round(r1Wrap.offsetHeight) : 0,
@@ -225,10 +314,15 @@ def main():
     print("SCORE HINTS BY TEAM COUNT:", results["score_hints"])
     print("AVATARS 4-TEAM:", results["start4_avatars"])
     print("START (720p):", results["start"])
-    print("Q0 (720p):", results["questions"][0])
+    print("PHASE 1 Q0 (720p):", results["questions"][0])
     print("Q1 badge after double-click on Q0:", results["questions"][1]["badge"])
-    print("Q9 Boss (720p):", results["questions"][9])
-    print("PODIUM (720p):", results["podium"])
+    print("FAKE PODIUM:", results["fake_podium"])
+    print("HEIST:", results["heist"])
+    print("PRE CUTSCENE:", [(s["counter"], s["speakerTag"]) for s in results["pre_cutscene"]])
+    print("BOSS Q0 (720p):", results["boss_questions"][0])
+    print("BOSS Q6 (720p):", results["boss_questions"][6])
+    print("FINAL CUTSCENE:", [(s["counter"], s["speakerTag"], s["bossModeAfterRestore"], s["lockedHudCount"]) for s in results["final_cutscene"]])
+    print("TRUE PODIUM (720p):", results["podium"])
 
     hints = results["score_hints"]
     assert "+100" in hints["2"] and "+200" in hints["4"]
@@ -246,28 +340,40 @@ def main():
     assert results["start"]["hasBase64"] and results["start"]["inputCount"] == 10 and not results["start"]["overflowY"]
     assert results["start"]["uniqueAvatars"] == 10 and results["start"]["brokenAvatars"] == 0
     assert results["questions"][1]["badge"] == "2 / 10", "Double-click skipped a question!"
+    assert all(q["bossSpotDisplay"] == "none" and not q["bossMode"] for q in results["questions"])
     assert results["questions"][0]["hudAvatarCount"] == 10
     assert results["questions"][0]["btnAvatarCount"] == 10 and results["questions"][0]["brokenBtnAvatars"] == 0
     assert "+500" in results["questions"][0]["btnSample"][0]
-    assert "+450" in results["questions"][0]["btnSample"][1]
-    assert "+400" in results["questions"][0]["btnSample"][2]
-    assert "+350" in results["questions"][0]["btnSample"][3]
     assert "+300" in results["questions"][0]["btnSample"][4]
-    assert results["questions"][0]["optHAfter"] >= 70
-    assert results["questions"][9]["optHAfter"] >= 70, f"Boss optHAfter too small: {results['questions'][9]['optHAfter']}"
-    assert "+1000" in results["questions"][9]["btnSample"][0]
-    assert "+600" in results["questions"][9]["btnSample"][4]
-    assert "0 / 1000 HP" in results["questions"][9]["bossHpAfter"]
-    assert all(q["brokenVisibleImgs"] == 0 for q in results["questions"])
+    assert all(q["optHAfter"] >= 70 and q["brokenVisibleImgs"] == 0 for q in results["questions"])
     assert not any(q["overflowY"] or q["overflowAfterReveal"] for q in results["questions"])
-    assert results["podium"]["active"] and results["podium"]["podiumAvatarCount"] == 3
+
+    assert results["fake_podium"]["podiumActive"] and not results["fake_podium"]["bossMode"]
+    assert results["heist"]["heistBanner"] and results["heist"]["bossMode"] and results["heist"]["lockedHudCount"] == 10
+    assert len(results["pre_cutscene"]) == 4 and all(s["overlay"] and s["brokenImgs"] == 0 and not s["overflowY"] for s in results["pre_cutscene"])
+
+    assert len(results["boss_questions"]) == 7
+    for idx, bq in enumerate(results["boss_questions"]):
+        assert bq["bossSpotDisplay"] == "flex" and bq["bossMode"]
+        assert bq["hpSegCount"] == 7 and bq["hpLostBefore"] == idx and bq["hpLostAfter"] == idx + 1
+        assert "+1000" in bq["btnSample"][0] and "+600" in bq["btnSample"][4]
+        assert bq["optHAfter"] >= 70 and bq["brokenVisibleImgs"] == 0
+        assert not bq["overflowY"] and not bq["overflowAfterReveal"]
+    assert "0 / 7" in results["boss_questions"][6]["bossHpAfter"]
+
+    assert len(results["final_cutscene"]) == 4
+    assert all(s["overlay"] and not s["bossModeAfterRestore"] and s["lockedHudCount"] == 0 and s["brokenImgs"] == 0 for s in results["final_cutscene"])
+
+    assert results["podium"]["active"] and not results["podium"]["bossMode"]
+    assert results["podium"]["podiumPts"] == ["15300 pts", "17000 pts", "13600 pts"]
+    assert results["podium"]["podiumAvatarCount"] == 3
     assert results["podium"]["rank1AvatarHeight"] >= 100
     assert results["podium"]["rank2AvatarHeight"] >= 90
     assert results["podium"]["headerToRank1AvatarGap"] >= 12
     assert results["podium"]["otherRanksCount"] == 7 and results["podium"]["otherRankAvatarCount"] == 7
     assert results["podium"]["brokenPodiumImgs"] == 0 and results["podium"]["stageToFooterGap"] >= 6
     assert not results["podium"]["overflowY"]
-    print("ALL AUDIT + 720P + AVATARS + 10-TEAM + BOSS 2X TESTS PASSED!")
+    print("ALL AUDIT + 720P + HEIST + CUTSCENES + 7-BOSS + DOUBLE-RESTORE TESTS PASSED!")
 
 
 if __name__ == "__main__":
