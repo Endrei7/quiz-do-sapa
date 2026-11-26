@@ -137,6 +137,38 @@ def main():
         win.evaluate_js("document.getElementById('btn-start-game').click();")
         time.sleep(0.25)
 
+        # 0. Rodada de Exemplo / Aquecimento antes da Q1 (zera pontos ao avancar)
+        prac = win.evaluate_js("""
+            (() => ({
+              badge: document.getElementById('q-counter-badge').textContent,
+              practiceBadge: document.getElementById('q-counter-badge').classList.contains('practice-badge'),
+              skipVisible: getComputedStyle(document.getElementById('btn-skip-practice')).display !== 'none',
+              overflowY: document.documentElement.scrollHeight > window.innerHeight + 2
+            }))()
+        """)
+        win.evaluate_js("document.querySelectorAll('.kahoot-btn')[window.__SAPA_DATA__.practiceQuestion.correct].click();")
+        time.sleep(0.18)
+        prac_fb = win.evaluate_js("""
+            (() => {
+              const btns = document.querySelectorAll('.team-award-btn');
+              btns[0].click(); btns[1].click();
+              return {
+                demoBtn0: btns[0].textContent,
+                nextLabel: document.getElementById('btn-next').textContent,
+                overflowAfter: document.documentElement.scrollHeight > window.innerHeight + 2
+              };
+            })()
+        """)
+        prac.update(prac_fb)
+        time.sleep(0.42)
+        win.evaluate_js("document.getElementById('btn-next').click();")
+        time.sleep(0.2)
+        prac["scoresZeroedAtQ1"] = win.evaluate_js("""
+            (() => Array.from(document.querySelectorAll('#hud-scores .score-pill')).every(el => el.textContent.trim().endsWith(': 0')))()
+        """)
+        prac["skipHiddenAtQ1"] = win.evaluate_js("getComputedStyle(document.getElementById('btn-skip-practice')).display === 'none'")
+        results["practice"] = prac
+
         q_checks = []
         for i in range(10):
             info = win.evaluate_js("""
@@ -345,6 +377,12 @@ def main():
 
     assert results["start"]["hasBase64"] and results["start"]["inputCount"] == 10 and not results["start"]["overflowY"]
     assert results["start"]["uniqueAvatars"] == 10 and results["start"]["brokenAvatars"] == 0
+
+    pr = results["practice"]
+    print("PRACTICE ROUND:", pr)
+    assert pr["badge"] == "🎯 EXEMPLO" and pr["practiceBadge"] and pr["skipVisible"]
+    assert "+500" in pr["demoBtn0"] and pr["scoresZeroedAtQ1"] and pr["skipHiddenAtQ1"]
+    assert not pr["overflowY"] and not pr["overflowAfter"]
     assert results["questions"][1]["badge"] == "2 / 10", "Double-click skipped a question!"
     assert all(q["bossSpotDisplay"] == "none" and not q["bossMode"] for q in results["questions"])
     assert results["questions"][0]["hudAvatarCount"] == 10

@@ -43,6 +43,8 @@ LEIA_ME_CONTENT = """===========================================================
    - Pressione F11 (ou clique em "Tela Cheia") para projetar em tela cheia.
    - Escolha de 2 a 10 equipes e selecione os 10 mascotes da Amazonia
      usando as setinhas (< >) ou clicando no avatar.
+   - Comeca com 1 Pergunta de Exemplo (para demonstrar na pratica sem valer pontos;
+     o placar zera sozinho ao ir para a Pergunta 1, ou clique em "Pular Exemplo").
    - Fase 1 (10 perguntas) com pontuacao automatica ajustada ao numero de equipes
      (descendo de 50 em 50 pontos) + Emboscada surpresa do Capitao Garrafao no
      Podio + Cutscenes HQ + Fase 2 (Boss Fight de 7 desafios valendo o DOBRO

@@ -1,4 +1,20 @@
-"""Banco de 10 perguntas educativas do S.A.P.A. adaptadas para o 5o ano."""
+"""Banco de perguntas educativas do S.A.P.A. (Rodada-Teste + 10 Fase 1 + 7 Boss Fight) para o 5o ano."""
+
+PRACTICE_QUESTION = {
+    "topic": "🎯 RODADA-TESTE • AQUECIMENTO (NÃO VALE PONTOS!)",
+    "question": "Pergunta de Exemplo! Qual atitude simples ajuda a manter nossa escola e nosso bairro sempre limpos?",
+    "options": [
+        "Jogar papel de bala pela janela do ônibus",
+        "Guardar o lixo até encontrar uma lixeira certinha!",
+        "Chutar garrafas vazias para debaixo da calçada",
+        "Esconder sacolas plásticas atrás das árvores",
+    ],
+    "correct": 1,
+    "explanation": "Muito bem! Esta foi a pergunta de exemplo para mostrar na prática as formas (▲ ◆ ● ■) e os botões de pontuação. Ao avançar, o placar zera e começa pra valer!",
+    "is_pollution": False,
+    "is_practice": True,
+    "mascot_tip": "Só exemplo! Testem os botões à vontade!",
+}
 
 QUESTIONS = [
     {

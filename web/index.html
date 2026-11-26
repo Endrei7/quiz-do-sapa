@@ -1287,6 +1287,17 @@
     padding: 5px 14px;
   }
 
+  .order-rule-pill.practice-pill {
+    background: #dcfce7;
+    border-color: #22c55e;
+    color: #166534;
+  }
+
+  .q-num-badge.practice-badge {
+    background: linear-gradient(180deg, #86efac 0%, #22c55e 100%);
+    color: #052e16;
+  }
+
   .reset-round-btn {
     border: 2.5px solid var(--ink);
     border-radius: 999px;
@@ -2177,7 +2188,10 @@
       <!-- FAIXA DE CONTROLE DA RODADA (SEM TEMPO) -->
       <div class="toy-card action-strip pop-in" id="action-panel">
         <span class="order-rule-pill" id="order-rule-pill">🏆 Ordem: 1ª +200 • 2ª +150 • 3ª +100 • 4ª+ +50</span>
-        <button class="kid-btn sunny" id="btn-reveal" type="button">👁 Revelar Resposta</button>
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <button class="kid-btn" id="btn-skip-practice" type="button" style="display:none;">⏭ Pular Exemplo</button>
+          <button class="kid-btn sunny" id="btn-reveal" type="button">👁 Revelar Resposta</button>
+        </div>
       </div>
 
       <!-- MASCOTE NA VITÓRIA-RÉGIA + BALÃO DE QUADRINHOS (+ BOSS NA FASE 2) -->
@@ -2331,7 +2345,7 @@
 <script src="sapa_data.js"></script>
 <script>
 (function () {
-  const DATA = window.__SAPA_DATA__ || { sprites: {}, avatars: {}, logo: "", questions: [], bossQuestions: [] };
+  const DATA = window.__SAPA_DATA__ || { sprites: {}, avatars: {}, logo: "", practiceQuestion: null, questions: [], bossQuestions: [] };
   const BOSS_TOTAL_HP = 7;
   const PRE_BOSS_DIALOGUES = [
     { speaker: "boss", name: "Capitão Garrafão", leftPose: "sad", rightPose: "boss_laugh", text: "MUAHAHAHA! Olá, crianças! Eu sou o Capitão Garrafão e roubei todos os seus pontos!" },
@@ -2670,6 +2684,7 @@
 
   const actionPanel = document.getElementById("action-panel");
   const orderRulePill = document.getElementById("order-rule-pill");
+  const btnSkipPractice = document.getElementById("btn-skip-practice");
   const btnReveal = document.getElementById("btn-reveal");
 
   const qTopic = document.getElementById("q-topic");
@@ -3058,11 +3073,31 @@
     showScreen("start");
   }
 
+  function startOfficialPhase1() {
+    state.teams.forEach((t) => {
+      t.score = 0;
+      t.phase1Score = 0;
+      t.bossScore = 0;
+      t.roundAward = 0;
+    });
+    state.mode = "phase1";
+    state.qIdx = 0;
+    SoundFX.fanfare();
+    loadQuestion();
+  }
+
+  if (btnSkipPractice) {
+    btnSkipPractice.addEventListener("click", () => {
+      if (state.phase !== "question" || state.mode !== "practice" || !lockNav()) return;
+      startOfficialPhase1();
+    });
+  }
+
   btnStartGame.addEventListener("click", () => {
     if (state.phase !== "start" || !lockNav()) return;
     closeAvatarModal();
     SoundFX.correct();
-    state.mode = "phase1";
+    state.mode = DATA.practiceQuestion ? "practice" : "phase1";
     state.qIdx = 0;
     state.bossIdx = 0;
     state.pointsStolen = false;
@@ -3167,10 +3202,11 @@
   function loadQuestion() {
     stopIntervals();
     clearCelebration();
+    const isPractice = state.mode === "practice" && Boolean(DATA.practiceQuestion);
     const isBossMode = state.mode === "boss";
     const deck = isBossMode ? DATA.bossQuestions : DATA.questions;
     const idx = isBossMode ? state.bossIdx : state.qIdx;
-    const q = deck[idx];
+    const q = isPractice ? DATA.practiceQuestion : deck[idx];
 
     state.pickedOption = null;
     state.awardedOrder = [];
@@ -3179,9 +3215,14 @@
 
     topBrandText.style.display = "none";
     qCounterBadge.style.display = "inline-block";
-    qCounterBadge.textContent = isBossMode
-      ? `⚔️ BOSS ${idx + 1} / ${deck.length}`
-      : `${idx + 1} / ${deck.length}`;
+    qCounterBadge.classList.toggle("practice-badge", isPractice);
+    orderRulePill.classList.toggle("practice-pill", isPractice);
+    if (btnSkipPractice) {
+      btnSkipPractice.style.display = isPractice ? "inline-block" : "none";
+    }
+    qCounterBadge.textContent = isPractice
+      ? "🎯 EXEMPLO"
+      : (isBossMode ? `⚔️ BOSS ${idx + 1} / ${deck.length}` : `${idx + 1} / ${deck.length}`);
     refreshHudScores();
 
     actionPanel.style.display = "flex";
@@ -3215,6 +3256,9 @@
         bIdx = (bIdx + 1) % bossPoses.length;
         setMascot(bossImg, bossPoses[bIdx], "boss-float");
       }, 2500);
+    } else if (isPractice) {
+      orderRulePill.textContent = `🎯 EXEMPLO (Placar zera na Q1!): Simule a ordem (${formatScoreSequence(nTeams, 1)})`;
+      clearBossVisuals();
     } else {
       orderRulePill.textContent = `🏆 Ordem (${nTeams} eq.): ${formatScoreSequence(nTeams, 1)}`;
       clearBossVisuals();
@@ -3244,12 +3288,15 @@
   }
 
   function renderAwardButtons(isBoss) {
+    const isPractice = state.mode === "practice";
     const mult = isBoss ? 2 : 1;
     const teamBtns = [];
     const btnLockUntil = state.teams.map(() => 0);
     awardTeamsContainer.innerHTML = isBoss
       ? '<span class="award-label">Acertos (2x • Ataque!):</span>'
-      : '<span class="award-label">Ordem de resposta:</span>';
+      : (isPractice
+        ? '<span class="award-label">Teste os pontos (zera na Q1):</span>'
+        : '<span class="award-label">Ordem de resposta:</span>');
 
     function updateAllAwardButtons() {
       const nTeams = state.teams.length || state.teamCount;
@@ -3368,10 +3415,11 @@
     stopIntervals();
     state.phase = "answer";
 
+    const isPractice = state.mode === "practice" && Boolean(DATA.practiceQuestion);
     const isBoss = state.mode === "boss";
     const deck = isBoss ? DATA.bossQuestions : DATA.questions;
     const idx = isBoss ? state.bossIdx : state.qIdx;
-    const q = deck[idx];
+    const q = isPractice ? DATA.practiceQuestion : deck[idx];
     const correctIdx = q.correct;
     const isWrongPick = state.pickedOption !== null && state.pickedOption !== correctIdx;
 
@@ -3423,8 +3471,10 @@
 
     renderAwardButtons(isBoss);
 
-    const isLast = idx === deck.length - 1;
-    if (isBoss) {
+    const isLast = !isPractice && idx === deck.length - 1;
+    if (isPractice) {
+      btnNext.textContent = "🚀 Valendo! Ir para a Pergunta 1 ➡";
+    } else if (isBoss) {
       btnNext.textContent = isLast ? "⚔️ Finalizar Batalha!" : "Próximo Desafio ➡";
     } else {
       btnNext.textContent = isLast ? "🏆 Ver Pódio!" : "Próxima Pergunta ➡";
@@ -3544,6 +3594,10 @@
 
   btnNext.addEventListener("click", () => {
     if (state.phase !== "answer" || !lockNav()) return;
+    if (state.mode === "practice") {
+      startOfficialPhase1();
+      return;
+    }
     SoundFX.click();
     if (state.mode === "phase1") {
       if (state.qIdx + 1 < DATA.questions.length) {

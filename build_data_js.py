@@ -3,7 +3,7 @@
 import base64
 import json
 import os
-from questions import QUESTIONS, BOSS_QUESTIONS
+from questions import PRACTICE_QUESTION, QUESTIONS, BOSS_QUESTIONS
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUT_JS = os.path.join(BASE_DIR, "web", "sapa_data.js")
@@ -55,6 +55,7 @@ def build():
             for name in AVATAR_NAMES
         },
         "logo": encode_png_data_uri("assets/sapa_logo.png"),
+        "practiceQuestion": PRACTICE_QUESTION,
         "questions": QUESTIONS,
         "bossQuestions": BOSS_QUESTIONS,
     }

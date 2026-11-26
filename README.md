@@ -6,11 +6,12 @@
 
 ---
 
-## 🎬 Fluxo Narrativo e Gameplay (v3.1)
+## 🎬 Fluxo Narrativo e Gameplay (v3.2)
 
 ```mermaid
 flowchart LR
-  A["🏁 Tela Inicial<br/>2 a 10 Equipes + Mascotes"] --> B["☀️ Fase 1 (10 Perguntas)<br/>Rio Limpo e Ensolarado"]
+  A["🏁 Tela Inicial<br/>2 a 10 Equipes + Mascotes"] --> P["🎯 Pergunta de Exemplo<br/>Treino Prático (Zera na Q1)"]
+  P --> B["☀️ Fase 1 (10 Perguntas)<br/>Rio Limpo e Ensolarado"]
   B --> C["🏆 Pódio Falso<br/>Emboscada + Roubo (Avanço Manual)"]
   C --> D["💬 Cutscene HQ<br/>Lúcio vs. Capitão Garrafão"]
   D --> E["⛈️ Fase 2: Boss Fight (7 Desafios)<br/>7 Segmentos HP + Pontos 2x"]
@@ -22,7 +23,8 @@ flowchart LR
 
 ## ✨ Principais Funcionalidades
 
-- **100% Off-line (Zero Dependências Externas):** Sprites, 10 avatares, logotipo e banco de 17 perguntas são embutidos em Base64 (`web/sapa_data.js`), e todos os efeitos sonoros (moedas, fanfarra, trovão, risada do vilão e ataque de água limpa) são sintetizados localmente via **Web Audio API**.
+- **100% Off-line (Zero Dependências Externas):** Sprites, 10 avatares, logotipo e banco completo de perguntas são embutidos em Base64 (`web/sapa_data.js`), e todos os efeitos sonoros (moedas, fanfarra, trovão, risada do vilão e ataque de água limpa) são sintetizados localmente via **Web Audio API**.
+- **Rodada de Exemplo / Aquecimento (`🎯 EXEMPLO`):** Abre antes da 1ª questão para o apresentador demonstrar na prática as alternativas (`▲ ◆ ● ■`) e a marcação de pontos das equipes ao vivo, zerando o placar automaticamente ao iniciar a Pergunta 1 (com opção rápida `"⏭ Pular Exemplo"`).
 - **Seletor de 2 a 10 Equipes com Mascotes da Amazônia:**
   - 10 animais amazônicos com medalhão colorido, setas `<` `>` e mini-grade modal **5×2**: *Boto-Cor-de-Rosa, Ariranha, Peixe-Boi, Tartaruga, Onça-Pintada, Preguiça, Tucano, Arara-Azul, Pirarucu e Sapo-Boi*.
   - Prevenção automática de mascotes repetidos e sugestão inteligente de nome preservando nomes personalizados digitados pela turma.
