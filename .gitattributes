@@ -1,0 +1,15 @@
+# Normaliza finais de linha no repositorio
+* text=auto eol=lf
+*.py text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+
+# Arquivos binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.exe binary
+*.zip binary

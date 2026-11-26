@@ -4,8 +4,8 @@ from collections import deque
 import os
 from PIL import Image, ImageFilter
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_SHEET = os.path.join(BASE_DIR, "spritesheet.jpeg")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SRC_SHEET = os.path.join(BASE_DIR, "assets_src", "spritesheet.jpeg")
 OUT_DIR = os.path.join(BASE_DIR, "web", "assets", "sprites")
 
 GRID_SPECS = [
@@ -165,8 +165,10 @@ def extract_frog_from_cell(cell: Image.Image) -> Image.Image:
     if final_bbox:
         cropped = cropped.crop(final_bbox)
 
-    cropped.thumbnail((520, 520), Image.Resampling.LANCZOS)
-    return cropped
+    cropped.thumbnail((504, 504), Image.Resampling.LANCZOS)
+    padded = Image.new("RGBA", (cropped.width + 16, cropped.height + 16), (0, 0, 0, 0))
+    padded.paste(cropped, (8, 8))
+    return padded
 
 
 def main():

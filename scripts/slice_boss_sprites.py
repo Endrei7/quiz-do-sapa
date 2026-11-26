@@ -4,8 +4,8 @@ from collections import deque
 import os
 from PIL import Image
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_BOSS = os.path.join(BASE_DIR, "boss_spritesheet.jpg")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SRC_BOSS = os.path.join(BASE_DIR, "assets_src", "boss_spritesheet.jpg")
 OUT_DIR = os.path.join(BASE_DIR, "web", "assets", "sprites")
 
 BOSS_GRID = [
@@ -90,8 +90,10 @@ def remove_outer_white(cell: Image.Image) -> Image.Image:
     bbox = rgba.getbbox()
     if bbox:
         rgba = rgba.crop(bbox)
-    rgba.thumbnail((520, 520), Image.Resampling.LANCZOS)
-    return rgba
+    rgba.thumbnail((504, 504), Image.Resampling.LANCZOS)
+    padded = Image.new("RGBA", (rgba.width + 16, rgba.height + 16), (0, 0, 0, 0))
+    padded.paste(rgba, (8, 8))
+    return padded
 
 
 def main():
